@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Anicura Campus ATV Beta</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+
+  <style id="atv-activities-styles">
+    /* ── Flashcards ─────────────────────────── */
+    .atv-flashcards { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; }
+    @media(max-width:900px){ .atv-flashcards{ grid-template-columns:repeat(2,1fr); } }
+    @media(max-width:500px){ .atv-flashcards{ grid-template-columns:1fr 1fr; } }
+    
+    .atv-fc { perspective:800px; cursor:pointer; min-height:160px; }
+    .atv-fc-in {
+      position:relative; width:100%; height:100%; min-height:160px;
+      transform-style:preserve-3d;
+      transition:transform .45s cubic-bezier(.4,0,.2,1);
+      border-radius:16px;
+    }
+    .atv-fc.atv-flipped .atv-fc-in { transform:rotateY(180deg); }
+    .atv-face {
+      position:absolute; inset:0; border-radius:16px;
+      padding:1.25rem; backface-visibility:hidden;
+      display:flex; flex-direction:column;
+      justify-content:space-between;
+      border:1.5px solid #E2EDF0;
+      box-shadow:0 2px 8px rgba(0,60,80,.07);
+    }
+    .atv-front { background:#FFFFFF; }
+    .atv-back  { background:#DDF0F4; transform:rotateY(180deg); }
+    .atv-face span { font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:#5A7A8A; }
+    .atv-face strong { font-family:'Nunito',sans-serif; font-size:1rem; color:#1A3140; line-height:1.3; }
+    .atv-face small { font-size:.72rem; color:#8EA8B5; margin-top:.25rem; }
+    .atv-fc:hover .atv-fc-in { box-shadow:0 6px 20px rgba(0,60,80,.12); }
+
+    /* ── Fill blanks ─────────────────────────── */
+    .atv-blank {
+      width:110px; padding:.3rem .6rem;
+      border:2px solid #C8DDE3; border-radius:8px;
+      background:#fff; text-align:center;
+      font-size:.9rem; color:#1A3140;
+      transition:border-color .2s, background .2s;
+      vertical-align:middle;
+    }
+    .atv-blank:focus { outline:none; border-color:#7ABFB3; }
+    .atv-blank.ok  { border-color:#2ECC71; background:#E6F7F2; }
+    .atv-blank.bad { border-color:#E74C3C; background:#FDEEF0; }
+
+    /* ── Exam questions ──────────────────────── */
+    .atv-q { padding:1.25rem 0; border-bottom:1px dashed #E2EDF0; }
+    .atv-q:last-child { border-bottom:none; }
+    .atv-q-text {
+      font-weight:600; color:#1A3140; margin:0 0 .85rem;
+      font-size:.96rem; display:flex; gap:.6rem; align-items:flex-start;
+    }
+    .atv-qn {
+      display:inline-flex; align-items:center; justify-content:center;
+      width:24px; height:24px; border-radius:50%;
+      background:#7ABFB3; color:#fff;
+      font-size:.72rem; font-weight:800; flex-shrink:0; margin-top:.1rem;
+    }
+    .atv-opts { display:flex; flex-direction:column; gap:.5rem; }
+    .atv-opt {
+      display:flex; align-items:center; gap:.75rem;
+      padding:.75rem 1rem; border-radius:12px;
+      border:1.5px solid #E2EDF0; background:#F0F7F9;
+      cursor:pointer; transition:all .15s;
+      font-size:.9rem; color:#1A3140;
+    }
+    .atv-opt:hover { background:#DDF0F4; border-color:#B8DCE6; }
+    .atv-opt input { accent-color:#7ABFB3; flex-shrink:0; width:16px; height:16px; }
+    .atv-opt.correct { background:#D4F5E5; border-color:#2ECC71; color:#1A6B41; font-weight:600; }
+    .atv-opt.wrong   { background:#FDEEF0; border-color:#E74C3C; color:#7B2D2D; }
+  </style>
+</head>
+<body>
+  <header class="navbar">
+    <div class="navbar-brand">
+      🐾 AniCura ATV
+    </div>
+    <div class="navbar-links">
+      <button class="btn" style="background:var(--color-secondary);color:#fff;">Mi progreso</button>
+      <button class="btn" style="background:var(--color-soft-pink);color:var(--color-primary);font-weight:700;">Urgencias/Soporte</button>
+    </div>
+  </header>
+
+  <a href="#contenido" class="sr-only">Saltar al contenido</a>
+  <div class="app">
+    <aside class="sidebar">
+      
+
+      <div class="sidebar-info">
+        <span class="pill pill-primary">Módulo activo</span>
+        <p style="margin:.8rem 0 0;color:var(--color-text-muted);font-size:var(--text-sm)">La beta muestra todos los bloques del grado y desarrolla por completo el módulo de sistema músculo-esquelético.</p>
+      </div>
+
+      <nav aria-label="Temario ATV" class="modules">
+        <button class="module-link active" data-panel="campus-home"><div><span class="mod-name">Vista general</span><small class="mod-sub">Presentación del campus</small></div><span class="badge badge-live">Beta</span></button>
+        <button class="module-link" data-panel="tema-1"><div><span class="mod-name">1. Material de consulta</span><small class="mod-sub">Repositorio docente</small></div><span class="badge badge-dev">Próximamente</span></button>
+        <button class="module-link" data-panel="tema-2"><div><span class="mod-name">2. Domesticación del perro</span><small class="mod-sub">Historia y evolución</small></div><span class="badge badge-dev">Próximamente</span></button>
+        <button class="module-link" data-panel="tema-3"><div><span class="mod-name">3. Razas de perros</span><small class="mod-sub">Identificación básica</small></div><span class="badge badge-dev">Próximamente</span></button>
+        <button class="module-link" data-panel="tema-4"><div><span class="mod-name">4. Origen del gato</span><small class="mod-sub">Contexto anatómico</small></div><span class="badge badge-dev">Próximamente</span></button>
+        <button class="module-link" data-panel="tema-5"><div><span class="mod-name">5. Razas de gatos</span><small class="mod-sub">Clasificación y rasgos</small></div><span class="badge badge-dev">Próximamente</span></button>
+        <button class="module-link" data-panel="tema-6"><div><span class="mod-name">6. Fisiología celular</span><small class="mod-sub">Base biológica</small></div><span class="badge badge-dev">Próximamente</span></button>
+        <button class="module-link" data-panel="tema-7"><div><span class="mod-name">7. Sistema músculo-esquelético</span><small class="mod-sub">Módulo completo</small></div><span class="badge badge-live">Completo</span></button>
+        <button class="module-link" data-panel="tema-8"><div><span class="mod-name">8. Nutrición y alimentación</span><small class="mod-sub">Plan docente</small></div><span class="badge badge-dev">Próximamente</span></button>
+        <button class="module-link" data-panel="tema-9"><div><span class="mod-name">9. Farmacología</span><small class="mod-sub">Próximo bloque</small></div><span class="badge badge-dev">Próximamente</span></button>
+        <button class="module-link" data-panel="tema-10"><div><span class="mod-name">10. Exploración y manejo</span><small class="mod-sub">Perros y gatos</small></div><span class="badge badge-dev">Próximamente</span></button>
+        <button class="module-link" data-panel="tema-11"><div><span class="mod-name">11. Sistema inmunológico</span><small class="mod-sub">Vacunación</small></div><span class="badge badge-dev">Próximamente</span></button>
+        <button class="module-link" data-panel="tema-12"><div><span class="mod-name">12. Parásitos gastrointestinales</span><small class="mod-sub">Perro y gato</small></div><span class="badge badge-dev">Próximamente</span></button>
+        <button class="module-link" data-panel="tema-13"><div><span class="mod-name">13. Desparasitación externa</span><small class="mod-sub">Protocolo clínico</small></div><span class="badge badge-dev">Próximamente</span></button>
+        <button class="module-link" data-panel="tema-14"><div><span class="mod-name">14. Órganos de los sentidos</span><small class="mod-sub">Apuntes y casos</small></div><span class="badge badge-dev">Próximamente</span></button>
+        <button class="module-link" data-panel="tema-15"><div><span class="mod-name">15. Oftalmología</span><small class="mod-sub">Campus en preparación</small></div><span class="badge badge-dev">Próximamente</span></button>
+        <button class="module-link" data-panel="tema-16"><div><span class="mod-name">16. Otología</span><small class="mod-sub">Campus en preparación</small></div><span class="badge badge-dev">Próximamente</span></button>
+        <button class="module-link" data-panel="tema-17"><div><span class="mod-name">17. Dermatología</span><small class="mod-sub">Campus en preparación</small></div><span class="badge badge-dev">Próximamente</span></button>
+        <button class="module-link" data-panel="tema-18"><div><span class="mod-name">18. Prurito en perro y gato</span><small class="mod-sub">Campus en preparación</small></div><span class="badge badge-dev">Próximamente</span></button>
+        <button class="module-link" data-panel="tema-19"><div><span class="mod-name">19. Etología</span><small class="mod-sub">Campus en preparación</small></div><span class="badge badge-dev">Próximamente</span></button>
+      </nav>
+
+      <button class="theme-toggle" data-theme-toggle aria-label="Cambiar tema">
+        <span id="theme-icon">◐</span>
+        <span>Cambiar modo</span>
+      </button>
+    </aside>
+
+    <main id="contenido">
+      <section id="campus-home" class="content-panel active">
+        <div class="hero">
+          <div class="hero-card">
+            <span class="pill pill-primary">Campus demo para presentación</span>
+            <h2>Un entorno tipo campus para el grado de ATV en Anicura.</h2>
+            <p>Esta beta enseña el planteamiento global del portal y desarrolla en profundidad el módulo de sistema músculo-esquelético con teoría estructurada, navegación por unidades, actividades, tarjetas de repaso y evaluación interactiva.</p>
+            <div class="hero-actions">
+              <button class="btn btn-primary" data-jump="tema-7">Entrar al módulo completo</button>
+              <button class="btn btn-outline" data-jump="modulos-grid">Ver temario general</button>
+            </div>
+          </div>
+          <div class="hero-grid">
+            <div class="metric-card">
+              <span class="m-label">Temario cargado</span>
+              <span class="m-value">19 bloques</span>
+              <span class="m-desc">Todos visibles, con un módulo completo y el resto señalados como próximos.</span>
+            </div>
+            <div class="metric-card">
+              <span class="m-label">Módulo activo</span>
+              <span class="m-value">9 unidades</span>
+              <span class="m-desc">Términos, morfología, huesos, articulaciones, músculos y evaluación.</span>
+            </div>
+            <div class="metric-card">
+              <span class="m-label">Experiencia</span>
+              <span class="m-value">Campus UI</span>
+              <span class="m-desc">Sidebar, progreso, fichas, acordeones, actividades y diseño responsive.</span>
+            </div>
+            <div class="metric-card">
+              <span class="m-label">Presentación</span>
+              <span class="m-value">Beta usable</span>
+              <span class="m-desc">Lista para enseñar estructura, navegación y potencial de escalado.</span>
+            </div>
+          </div>
+        </div>
+
+        <section>
+          <div class="sec-head">
+            <div>
+              <h3>Mapa del campus</h3>
+              <p>El campus se plantea como una biblioteca docente navegable por módulos. En esta versión, el sistema músculo-esquelético funciona como referencia para el resto del grado.</p>
+            </div>
+          </div>
+          <div class="modules-grid" id="modulos-grid">
+            <article class="module-card live">
+              <span class="pill pill-live">✓ Módulo completo</span>
+              <h4>7. Sistema músculo-esquelético</h4>
+              <p>Contenido completo con anatomía básica, articulaciones, huesos, esqueleto axial y apendicular, sistema muscular y actividades.</p>
+              <button class="btn btn-primary" data-jump="tema-7">Abrir módulo</button>
+            </article>
+            <article class="module-card inactive"><span class="pill pill-dev">Próximamente</span><h4>1. Material de consulta</h4><p>Zona futura para PDFs, guías rápidas, glosarios y recursos de apoyo.</p></article>
+            <article class="module-card inactive"><span class="pill pill-dev">Próximamente</span><h4>2. Domesticación del perro</h4><p>Evolución, adaptación, contexto clínico y relación humano-animal.</p></article>
+            <article class="module-card inactive"><span class="pill pill-dev">Próximamente</span><h4>3. Razas de perros</h4><p>Clasificación por tamaños, grupos y rasgos anatómicos relevantes.</p></article>
+            <article class="module-card inactive"><span class="pill pill-dev">Próximamente</span><h4>4. Origen del gato</h4><p>Base histórica y biológica para comprender conducta y morfología.</p></article>
+            <article class="module-card inactive"><span class="pill pill-dev">Próximamente</span><h4>5. Razas de gatos</h4><p>Patrones morfológicos, razas frecuentes y predisposiciones.</p></article>
+            <article class="module-card inactive"><span class="pill pill-dev">Próximamente</span><h4>6. Fisiología celular</h4><p>Fundamentos para comprender tejidos, órganos y respuesta biológica.</p></article>
+            <article class="module-card inactive"><span class="pill pill-dev">Próximamente</span><h4>8. Nutrición y alimentación</h4><p>Raciones, requerimientos y soporte nutricional clínico.</p></article>
+            <article class="module-card inactive"><span class="pill pill-dev">Próximamente</span><h4>9–19. Resto del grado</h4><p>Exploración, inmunología, vacunación, parásitos, oftalmología, dermatología, prurito y etología.</p></article>
+          </div>
+        </section>
+      </section>
+
+      <section id="tema-7" class="content-panel hide">
+        <div class="mod-header">
+          <div class="mod-header-info">
+            <span class="pill pill-live" style="margin-bottom:var(--sp-3);display:inline-flex;">✓ Módulo completo</span>
+            <h3>Sistema músculo-esquelético</h3>
+            <p>Bloque central de la beta: teoría, repasos visuales, diagramas y evaluación interactiva.</p>
+          </div>
+          <div class="mod-progress-box">
+            <div class="label">Estado del alumno</div>
+            <div class="pct">68%</div>
+            <div class="bar"><span style="width:68%"></span></div>
+          </div>
+        </div>
+
+        <div class="lesson-shell">
+          <aside class="unit-nav">
+            <h4>Unidades del tema</h4>
+            <div class="unit-list">
+              <button class="unit-btn active" data-unit="u1">1. Términos direccionales</button>
+              <button class="unit-btn" data-unit="u2">2. Morfología externa</button>
+              <button class="unit-btn" data-unit="u3">3. Sistema esquelético</button>
+              <button class="unit-btn" data-unit="u4">4. Articulaciones</button>
+              <button class="unit-btn" data-unit="u5">5. Movimientos articulares</button>
+              <button class="unit-btn" data-unit="u6">6. Esqueleto axial</button>
+              <button class="unit-btn" data-unit="u7">7. Esqueleto apendicular</button>
+              <button class="unit-btn" data-unit="u8">8. Sistema muscular</button>
+              <button class="unit-btn" data-unit="u9">9. Repaso y Evaluación</button>
+</div>
+          </aside>
+
+          <div class="lesson-main">
+            <article class="lesson-card unit-panel unit-content" id="u1">
+              <div class="eyebrow">Unidad 1</div>
+              <h4>Términos direccionales y planos anatómicos</h4>
+              <p class="lead">El dominio de los términos direccionales y los planos anatómicos es fundamental para cualquier Auxiliar Técnico Veterinario (ATV). Constituyen el vocabulario universal en la práctica clínica para describir ubicaciones, lesiones, abordajes quirúrgicos y posicionamientos radiológicos con precisión absoluta y sin ambigüedad.</p>
+              
+              <section>
+                <h5>Términos direccionales fundamentales</h5>
+                <p>En anatomía veterinaria, la posición anatómica de referencia es el animal cuadrúpedo en estación (de pie) mirando hacia el frente. A partir de aquí definimos:</p>
+                <ul class="icon-list">
+                  <li><strong>Dorsal y Ventral:</strong> Dorsal se refiere a las partes más cercanas a la espalda o columna vertebral (hacia el dorso). Ventral indica las partes más cercanas al vientre o suelo.</li>
+                  <li><strong>Craneal y Caudal:</strong> Craneal es todo aquello que se dirige o está más cerca de la cabeza. Caudal es lo que se acerca a la cola. <em>Nota: En la cabeza misma no se usa craneal, sino rostral (hacia la nariz).</em></li>
+                  <li><strong>Medial y Lateral:</strong> Medial describe una posición cercana al plano sagital medio (el centro del cuerpo). Lateral indica una posición más alejada de este plano, hacia los lados.</li>
+                  <li><strong>Proximal y Distal:</strong> Usados exclusivamente en los miembros (extremidades) y en algunos apéndices como la cola o las orejas. Proximal es lo más cercano a la raíz del miembro (el tronco); distal es lo más alejado.</li>
+                  <li><strong>Palmar y Plantar:</strong> Se emplean en la porción distal de las extremidades (desde el carpo/tarso hacia abajo). Palmar se usa en el miembro torácico (anterior) en su cara posterior. Plantar se usa en el miembro pelviano (posterior) en su cara posterior.</li>
+                  <li><strong>Rostral:</strong> Término específico utilizado sólo en la cabeza para indicar estructuras cercanas a la nariz o al hocico.</li>
+                </ul>
+              </section>
+
+              <section>
+                <h5>Tabla Comparativa de Términos</h5>
+                <table class="comparison-table">
+                  <thead>
+                    <tr>
+                      <th>Término</th>
+                      <th>Significado</th>
+                      <th>Ejemplo en Perro</th>
+                      <th>Ejemplo en Gato</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Craneal</td>
+                      <td>Hacia la cabeza</td>
+                      <td>El hombro es craneal a la cadera</td>
+                      <td>El cuello es craneal al tórax</td>
+                    </tr>
+                    <tr>
+                      <td>Caudal</td>
+                      <td>Hacia la cola</td>
+                      <td>La pelvis es caudal al abdomen</td>
+                      <td>La región lumbar es caudal a la cruz</td>
+                    </tr>
+                    <tr>
+                      <td>Proximal</td>
+                      <td>Cercano al tronco</td>
+                      <td>El codo es proximal al carpo</td>
+                      <td>El fémur es proximal a la tibia</td>
+                    </tr>
+                    <tr>
+                      <td>Distal</td>
+                      <td>Alejado del tronco</td>
+                      <td>Las falanges son distales al carpo</td>
+                      <td>Las garras son distales a las falanges medias</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+
+              <section>
+                <h5>Planos Anatómicos de Referencia</h5>
+                <p>Los planos anatómicos son superficies imaginarias planas que atraviesan el cuerpo del animal, dividiéndolo para facilitar su estudio y diagnóstico (p. ej., en TC, RM o ecografía).</p>
+                <ul class="icon-list">
+                  <li><strong>Plano Sagital Medio:</strong> Divide el cuerpo longitudinalmente en dos mitades simétricas: derecha e izquierda. Cualquier plano paralelo a este se denomina plano sagital o paramediano.</li>
+                  <li><strong>Plano Transversal:</strong> Corta el cuerpo perpendicularmente a su eje longitudinal, dividiéndolo en una parte craneal y otra caudal. Si cruza una extremidad, la divide en porción proximal y distal.</li>
+                  <li><strong>Plano Frontal (o Dorsal):</strong> Corta el cuerpo perpendicularmente a los planos sagital y transversal, dividiéndolo en una porción dorsal y una ventral.</li>
+                </ul>
+              </section>
+
+              <div class="clinical-note">
+                <div class="cn-icon">⚠️</div>
+                <div>
+                  <h5>Atención clínica: Posicionamiento radiológico</h5>
+                  <p>En radiología, los términos de posicionamiento son críticos para obtener proyecciones diagnósticas correctas. Por ejemplo, una radiografía "Ventrodorsal" (VD) significa que el haz de rayos X entra por el vientre (ventral) y sale por la espalda (dorsal), requiriendo que el paciente esté tumbado boca arriba. Una confusión de términos puede arruinar un estudio diagnóstico y someter al paciente a radiación innecesaria.</p>
+                </div>
+              </div>
+
+              <figure class="diagram-card" style="margin-top: var(--space-5);">
+                <h5>Esquema visual de orientación corporal</h5>
+                <div class="diagram" aria-hidden="true" style="background:var(--color-surface);">
+                  <svg viewBox="0 0 420 220" fill="none">
+                    <rect x="0" y="0" width="420" height="220" fill="transparent"/>
+                    <path d="M70 140c12-42 38-67 89-67h52c37 0 75 18 111 53l25 25-10 17H90c-13 0-22-12-20-28Z" fill="rgba(27,42,74,.1)" stroke="currentColor" stroke-width="2"/>
+                    <circle cx="118" cy="92" r="26" fill="rgba(27,42,74,.05)" stroke="currentColor" stroke-width="2"/>
+                    <path d="M106 74l-14-20M129 70l6-22" stroke="currentColor"/>
+                    <path d="M160 167l-8 28M212 167l2 28M276 167l-3 28M328 164l6 28" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+                    <path d="M350 142l25-8" stroke="currentColor" stroke-width="3"/>
+                    <path d="M130 34h64" stroke="currentColor" stroke-width="2" marker-end="url(#a)"/>
+                    <path d="M65 168h-42" stroke="currentColor" stroke-width="2" marker-end="url(#a)"/>
+                    <path d="M190 25v-20" stroke="currentColor" stroke-width="2" marker-end="url(#a)"/>
+                    <path d="M210 182v25" stroke="currentColor" stroke-width="2" marker-end="url(#a)"/>
+                    <defs><marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="currentColor"/></marker></defs>
+                    <text x="198" y="38" font-size="13" fill="currentColor" font-weight="bold">Craneal</text>
+                    <text x="8" y="173" font-size="13" fill="currentColor" font-weight="bold">Caudal</text>
+                    <text x="194" y="15" font-size="13" fill="currentColor" font-weight="bold">Dorsal</text>
+                    <text x="215" y="215" font-size="13" fill="currentColor" font-weight="bold">Ventral</text>
+                    <path d="M100 85h-25" stroke="var(--color-secondary)" stroke-width="2" marker-end="url(#a)"/>
+                    <text x="35" y="90" font-size="11" fill="var(--color-secondary)">Rostral</text>
+                  </svg>
+                </div>
+                <figcaption style="text-align: center; font-size: var(--text-xs); color: var(--color-text-muted); margin-top: 0.5rem;">Representación de ejes direccionales básicos sobre la silueta canina.</figcaption>
+              </figure>
+            </article>
+
+            <article class="lesson-card unit-panel unit-content hide" id="u2">
+              <div class="eyebrow">Unidad 2</div>
+              <h4>Morfología externa del perro y del gato</h4>
+              <p class="lead">La morfología externa estudia la topografía del animal. Conocer cada región exterior es imprescindible para registrar con exactitud hallazgos en la exploración física, comunicar zonas de dolor, describir masas o lesiones cutáneas y localizar vías de acceso venoso.</p>
+              
+              <section>
+                <h5>Morfología en el Perro</h5>
+                <p>El perro posee una alta diversidad morfológica debido a la selección artificial, pero la topografía base es constante:</p>
+                <ul class="icon-list">
+                  <li><strong>Cabeza y Cuello:</strong> Destacan el <em>stop</em> (depresión frontonasal), la <em>trufa</em> (nariz), hocico, belfos (labios), comisuras, mejillas, región frontal, pabellón auricular y papada. El cuello se divide en región dorsal (nuca) y ventral (donde pasa la vena yugular, crítica para extracciones).</li>
+                  <li><strong>Tronco:</strong> Iniciando en la <em>cruz</em> (punto más alto de los hombros, usado para medir la alzada), dorso (espalda), lomo (región lumbar), grupa (hasta la base de la cola), tórax (costillar y esternón), abdomen (vientre), ijada o flanco (lateral del abdomen) y región pélvica/perineal.</li>
+                  <li><strong>Miembro Torácico (Anterior):</strong> Hombro (escápula), brazo (húmero), codo, antebrazo (radio/cúbito), carpo (muñeca), metacarpo y dígitos.</li>
+                  <li><strong>Miembro Pelviano (Posterior):</strong> Muslo (fémur), rodilla (articulación fémoro-tibio-rotuliana), pierna (tibia/peroné), corvejón (tarso), metatarso y dígitos.</li>
+                  <li><strong>Cola:</strong> Región caudal, cuya forma y porte varían enormemente entre razas.</li>
+                </ul>
+              </section>
+
+              <section>
+                <h5>Morfología en el Gato: Diferencias destacadas</h5>
+                <p>La morfología felina es mucho más homogénea, adaptada a la agilidad, sigilo y salto. Sus diferencias morfológicas principales con el perro son:</p>
+                <ul class="icon-list">
+                  <li><strong>Cabeza más redondeada</strong>, hocico corto, ojos grandes orientados frontalmente y pabellones auriculares muy móviles. No presentan un "stop" tan marcado como muchas razas caninas.</li>
+                  <li><strong>Flexibilidad del tronco:</strong> Mayor movilidad en la región lumbar y ausencia de clavícula osificada rígida, lo que les permite introducirse por huecos estrechos y amortiguar saltos.</li>
+                  <li><strong>Garras retráctiles:</strong> (Excepto en el guepardo). Al explorar el pie felino, las garras descansan ocultas dentro de vainas cutáneas.</li>
+                </ul>
+              </section>
+
+              <section>
+                <h5>Tabla de Regiones y Estructuras</h5>
+                <table class="comparison-table">
+                  <thead>
+                    <tr>
+                      <th>Región Externa</th>
+                      <th>Nombre Técnico / Zona</th>
+                      <th>Estructura Ósea/Articular Subyacente</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Cruz</td>
+                      <td>Región interescapular</td>
+                      <td>Apófisis espinosas de vértebras torácicas cr. y bordes escapulares</td>
+                    </tr>
+                    <tr>
+                      <td>Corvejón</td>
+                      <td>Región tarsal</td>
+                      <td>Huesos del tarso (calcáneo forma la punta)</td>
+                    </tr>
+                    <tr>
+                      <td>Flanco / Ijada</td>
+                      <td>Región abdominal lateral</td>
+                      <td>Ausencia de hueso (zona de musculatura oblicua)</td>
+                    </tr>
+                    <tr>
+                      <td>Grupa</td>
+                      <td>Región sacra / glútea</td>
+                      <td>Hueso sacro e ilion (pelvis)</td>
+                    </tr>
+                    <tr>
+                      <td>Brazo</td>
+                      <td>Región braquial</td>
+                      <td>Húmero</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+
+              <div class="did-you-know">
+                <div class="dyk-icon">💡</div>
+                <div>
+                  <h5>¿Sabías que...?</h5>
+                  <p>La piel de la zona dorsal del cuello y la cruz es muy laxa y menos sensible. Por ello, esta es la zona de elección anatómica para la administración de inyecciones subcutáneas (SC) y microchips, tanto en perros como en gatos, ofreciendo un área segura alejada de vasos importantes y nervios.</p>
+                </div>
+              </div>
+            </article>
+
+            <article class="lesson-card unit-panel unit-content hide" id="u3">
+              <div class="eyebrow">Unidad 3</div>
+              <h4>Sistema esquelético, tejido óseo y desarrollo</h4>
+              <p class="lead">El sistema esquelético es el andamiaje del animal. Va mucho más allá de un simple soporte estático: es un tejido vivo, dinámico y con múltiples funciones vitales esenciales para la homeostasis.</p>
+              
+              <section>
+                <h5>Funciones del Esqueleto</h5>
+                <ul class="icon-list">
+                  <li><strong>Soporte y Estructura:</strong> Da forma al cuerpo y permite la posición en estación.</li>
+                  <li><strong>Protección:</strong> Huesos como el cráneo o las costillas protegen órganos vitales (cerebro, corazón, pulmones).</li>
+                  <li><strong>Movimiento:</strong> Proporciona un sistema de palancas accionadas por la musculatura esquelética.</li>
+                  <li><strong>Hematopoyesis:</strong> La médula ósea roja (en el interior de los huesos) es la fábrica de glóbulos rojos, blancos y plaquetas.</li>
+                  <li><strong>Reservorio Mineral:</strong> Almacena calcio, fósforo y otros minerales, liberándolos a la sangre según las necesidades metabólicas.</li>
+                </ul>
+              </section>
+
+              <section>
+                <h5>Composición del Tejido Óseo</h5>
+                <p>El tejido óseo se compone de células especializadas y una matriz extracelular calcificada:</p>
+                <ul class="icon-list">
+                  <li><strong>Osteoblastos:</strong> Células constructoras, responsables de formar nueva matriz ósea.</li>
+                  <li><strong>Osteoclastos:</strong> Células destructoras que reabsorben y remodelan el hueso.</li>
+                  <li><strong>Osteocitos:</strong> Osteoblastos maduros atrapados en la matriz ósea, encargados del mantenimiento del tejido.</li>
+                  <li><strong>Matriz Orgánica:</strong> Principalmente fibras de colágeno, aporta flexibilidad y resistencia a la tensión.</li>
+                  <li><strong>Matriz Inorgánica:</strong> Sales minerales (cristales de hidroxiapatita), aportan dureza y resistencia a la compresión.</li>
+                </ul>
+              </section>
+
+              <section>
+                <h5>Clasificación de los Huesos</h5>
+                <table class="comparison-table">
+                  <thead>
+                    <tr>
+                      <th>Tipo de Hueso</th>
+                      <th>Características Principales</th>
+                      <th>Ejemplos Clínicos (Perro/Gato)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Huesos Largos</td>
+                      <td>Tienen diáfisis tubular y dos epífisis ensanchadas. Actúan como palancas.</td>
+                      <td>Fémur, húmero, tibia, radio.</td>
+                    </tr>
+                    <tr>
+                      <td>Huesos Cortos</td>
+                      <td>Forma cuboide, amortiguan impactos en articulaciones complejas.</td>
+                      <td>Huesos carpianos y tarsianos.</td>
+                    </tr>
+                    <tr>
+                      <td>Huesos Planos</td>
+                      <td>Láminas delgadas de hueso. Función principal: protección e inserción muscular.</td>
+                      <td>Escápula, huesos del cráneo, pelvis.</td>
+                    </tr>
+                    <tr>
+                      <td>Huesos Irregulares</td>
+                      <td>Formas complejas, impares y en la línea media.</td>
+                      <td>Vértebras, huesos de la base del cráneo.</td>
+                    </tr>
+                    <tr>
+                      <td>Huesos Sesamoideos</td>
+                      <td>Pequeños huesos incrustados en tendones para evitar fricción y alterar el ángulo de tracción.</td>
+                      <td>Rótula (patela), sesamoideos palmares.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+
+              <section>
+                <h5>Estructura del Hueso Largo y Osificación</h5>
+                <p>Un hueso largo típico tiene una parte central cilíndrica (<strong>diáfisis</strong>) y extremos articulares (<strong>epífisis</strong>). La zona de transición es la <strong>metáfisis</strong>. El exterior está cubierto por una membrana fibrosa vascularizada, el <strong>periostio</strong>, mientras que la cavidad interna (canal medular) está recubierta por el <strong>endostio</strong>.</p>
+                <p><strong>Osificación:</strong> El proceso de formación ósea ocurre por dos vías. La <em>osificación intramembranosa</em> forma los huesos planos directamente desde el tejido conectivo. La <em>osificación endocondral</em> es el proceso donde un molde de cartílago es reemplazado gradualmente por hueso, característico de los huesos largos. Este proceso ocurre en la placa fisaria (línea de crecimiento) y continúa hasta la madurez del animal.</p>
+              </section>
+
+              <div class="did-you-know">
+                <div class="dyk-icon">💡</div>
+                <div>
+                  <h5>¿Sabías que...?</h5>
+                  <p>Un perro tiene aproximadamente <strong>320 huesos</strong> (dependiendo de la longitud de la cola o si tiene espolones), mientras que un gato tiene unos <strong>245 huesos</strong>. La rótula es el hueso sesamoideo más grande del cuerpo, pero existen muchos otros pequeños sesamoideos detrás de las articulaciones de los dedos del perro que suelen ser confundidos con fragmentos de fractura por los dueños al ver radiografías.</p>
+                </div>
+              </div>
+            </article>
+
+            <article class="lesson-card unit-panel unit-content hide" id="u4">
+              <div class="eyebrow">Unidad 4</div>
+              <h4>Articulaciones y biomecánica</h4>
+              <p class="lead">Una articulación, o artrosis, es el punto de contacto entre dos o más huesos, entre cartílago y hueso, o entre dientes y huesos. Son las bisagras del esqueleto que determinan el rango de movimiento corporal del paciente.</p>
+              
+              <section>
+                <h5>Clasificación Funcional</h5>
+                <p>Dependiendo del grado de movimiento que permitan, las articulaciones se dividen en:</p>
+                <ul class="icon-list">
+                  <li><strong>Sinartrosis:</strong> Articulaciones completamente inmóviles. Proveen estabilidad y protección.</li>
+                  <li><strong>Anfiartrosis:</strong> Permiten un movimiento muy limitado o semimóvil.</li>
+                  <li><strong>Diartrosis:</strong> Articulaciones de libre movimiento, esenciales para la locomoción.</li>
+                </ul>
+              </section>
+
+              <section>
+                <h5>Clasificación Estructural</h5>
+                <p>Se basa en el material que une los huesos y la presencia o ausencia de una cavidad articular:</p>
+                <ul class="icon-list">
+                  <li><strong>Articulaciones Fibrosas:</strong> Los huesos están unidos por tejido conectivo denso. No hay cavidad articular. Ejemplos: <em>suturas</em> (entre los huesos del cráneo), <em>sindesmosis</em> (articulación tibiofibular distal) y <em>gonfosis</em> (raíces de los dientes en los alvéolos maxilares).</li>
+                  <li><strong>Articulaciones Cartilaginosas:</strong> Los huesos se unen por cartílago hialino o fibrocartílago. Ejemplos: <em>sincondrosis</em> (placa epifisaria de crecimiento) y <em>sínfisis</em> (sínfisis pélvica, sínfisis mandibular).</li>
+                  <li><strong>Articulaciones Sinoviales:</strong> Son las más complejas y móviles (diartrosis). Tienen cavidad articular. Según el movimiento, pueden ser <em>monoaxiales</em> (bisagra como el codo, o pivote como atlanto-axial), <em>biaxiales</em> (condilares o en silla de montar) y <em>poliaxiales</em> (esféricas como cadera y hombro, permitiendo todos los movimientos).</li>
+                </ul>
+              </section>
+
+              <section>
+                <h5>Componentes de la Articulación Sinovial</h5>
+                <p>Para funcionar sin desgaste ni dolor, una articulación sinovial cuenta con:</p>
+                <ul class="icon-list">
+                  <li><strong>Cartílago hialino:</strong> Recubre las superficies óseas articulares, reduciendo fricción y absorbiendo impactos. No tiene vasos sanguíneos.</li>
+                  <li><strong>Cápsula articular:</strong> Envoltura externa formada por una membrana fibrosa resistente y una <em>membrana sinovial</em> interna que segrega el líquido articular.</li>
+                  <li><strong>Líquido sinovial:</strong> Fluido viscoso que lubrica y nutre el cartílago articular.</li>
+                  <li><strong>Ligamentos:</strong> Bandas de tejido conectivo resistente que unen hueso con hueso. Pueden ser extraarticulares (colaterales) o intraarticulares (cruzados de la rodilla).</li>
+                  <li><strong>Meniscos:</strong> Almohadillas de fibrocartílago (como en la rodilla) que mejoran el encaje entre huesos incongruentes.</li>
+                </ul>
+              </section>
+
+              <section>
+                <h5>Tabla Resumen de Articulaciones Relevantes</h5>
+                <table class="comparison-table">
+                  <thead>
+                    <tr>
+                      <th>Articulación Clínica</th>
+                      <th>Tipo Estructural</th>
+                      <th>Movimientos Posibles</th>
+                      <th>Relevancia Clínica ATV</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Coxofemoral (Cadera)</td>
+                      <td>Sinovial Esferoide</td>
+                      <td>Poliaxial (flexión, extensión, abducción, rotación)</td>
+                      <td>Lugar de presentación de la <strong>displasia de cadera</strong> o luxaciones.</td>
+                    </tr>
+                    <tr>
+                      <td>Fémoro-tibio-rotuliana (Rodilla)</td>
+                      <td>Sinovial Condilar / Bisagra</td>
+                      <td>Principalmente Flexión / Extensión</td>
+                      <td>Alta incidencia de <strong>rotura de ligamento cruzado craneal</strong> y luxación de rótula.</td>
+                    </tr>
+                    <tr>
+                      <td>Sínfisis mandibular</td>
+                      <td>Cartilaginosa (Sínfisis)</td>
+                      <td>Anfiartrosis (ligero movimiento)</td>
+                      <td>Frecuentemente separada en gatos que sufren caídas de gran altura.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+
+              <div class="clinical-note">
+                <div class="cn-icon">⚠️</div>
+                <div>
+                  <h5>Atención clínica: Ligamento Cruzado</h5>
+                  <p>La rotura del ligamento cruzado craneal en el perro es una de las patologías traumatológicas más comunes en clínicas. Este ligamento, al ser intraarticular (dentro de la cápsula sinovial de la rodilla), tiene poca capacidad de cicatrización por sí mismo, derivando en inestabilidad articular, inflamación severa y osteoartrosis progresiva si no se interviene quirúrgicamente (técnicas como TPLO o TTA).</p>
+                </div>
+              </div>
+            </article>
+
+            <article class="lesson-card unit-panel unit-content hide" id="u5">
+              <div class="eyebrow">Unidad 5</div>
+              <h4>Análisis de los movimientos articulares</h4>
+              <p class="lead">Para evaluar cojeras, realizar rehabilitación fisioterapéutica o describir un examen ortopédico, el ATV debe conocer la nomenclatura técnica de los movimientos que puede realizar cada articulación en el espacio.</p>
+              
+              <section>
+                <h5>Movimientos en el plano sagital (Angulares)</h5>
+                <ul class="icon-list">
+                  <li><strong>Flexión:</strong> Disminución del ángulo entre dos huesos (doblar la articulación). Al flexionar el codo, el antebrazo se acerca al brazo.</li>
+                  <li><strong>Extensión:</strong> Aumento del ángulo entre dos huesos hasta volver a la posición anatómica. Extender la rodilla alinea el fémur y la tibia.</li>
+                  <li><strong>Hiperextensión:</strong> Extensión de una articulación más allá de los 180 grados. En animales digitígrados como perros y gatos, la articulación del carpo suele estar en ligera hiperextensión fisiológica.</li>
+                </ul>
+              </section>
+
+              <section>
+                <h5>Movimientos en el plano frontal y rotacionales</h5>
+                <ul class="icon-list">
+                  <li><strong>Abducción:</strong> Movimiento que aleja una extremidad o segmento del plano sagital medio del cuerpo. (Abrir la pata hacia fuera).</li>
+                  <li><strong>Aducción:</strong> Movimiento que acerca la extremidad hacia el plano medio. (Cerrar la pata hacia el centro).</li>
+                  <li><strong>Circunducción:</strong> Movimiento circular de un miembro que combina flexión, extensión, abducción y aducción, trazando un cono. Típico en la articulación del hombro y cadera.</li>
+                  <li><strong>Rotación:</strong> Giro de un hueso sobre su propio eje longitudinal. Puede ser rotación interna (hacia medial) o externa (hacia lateral).</li>
+                </ul>
+              </section>
+              
+              <section>
+                <h5>Movimientos Especiales</h5>
+                <ul class="icon-list">
+                  <li><strong>Pronación:</strong> Rotación del antebrazo que hace que el dorso de la pata mire hacia craneal/dorsal.</li>
+                  <li><strong>Supinación:</strong> Rotación inversa donde la cara palmar miraría hacia medial/dorsal. En perros la capacidad de supinación es muy limitada; los gatos conservan mucha mayor capacidad para atrapar presas.</li>
+                  <li><strong>Protracción y Retracción:</strong> Desplazamiento del miembro completo hacia adelante (craneal) y hacia atrás (caudal) durante la marcha.</li>
+                  <li><strong>Elevación y Depresión:</strong> Movimientos de alzada y caída, aplicados comúnmente a la mandíbula al masticar.</li>
+                </ul>
+              </section>
+
+              <section>
+                <h5>Tabla de Movimientos y Músculos</h5>
+                <table class="comparison-table">
+                  <thead>
+                    <tr>
+                      <th>Movimiento</th>
+                      <th>Definición Clínica</th>
+                      <th>Articulación Ejemplo</th>
+                      <th>Músculo Agonista (Ejemplo)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Extensión de codo</td>
+                      <td>Aumentar ángulo humero-radioulnar</td>
+                      <td>Codo (cúbito)</td>
+                      <td>Músculo tríceps braquial</td>
+                    </tr>
+                    <tr>
+                      <td>Flexión de cadera</td>
+                      <td>Acercar el fémur al abdomen</td>
+                      <td>Coxofemoral</td>
+                      <td>Músculo iliopsoas</td>
+                    </tr>
+                    <tr>
+                      <td>Abducción</td>
+                      <td>Alejar miembro del plano medio</td>
+                      <td>Hombro / Cadera</td>
+                      <td>Músculos glúteos</td>
+                    </tr>
+                    <tr>
+                      <td>Pronación</td>
+                      <td>Giro palmar hacia el suelo</td>
+                      <td>Radioulnar</td>
+                      <td>Pronador redondo</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+
+              <div class="did-you-know">
+                <div class="dyk-icon">💡</div>
+                <div>
+                  <h5>Ejercicio Visual: La marcha del perro</h5>
+                  <p>Si observas a un perro caminar a cámara lenta, verás una coreografía articular: el miembro torácico se "protrae" gracias a los músculos del cuello y hombro. Al tocar el suelo, el hombro y el carpo se "hiperextienden" para amortiguar el peso, mientras el codo se mantiene firme en "extensión". Para impulsarse, el miembro pelviano realiza una potente "extensión" de cadera, rodilla y corvejón de forma simultánea, empujando el cuerpo hacia delante.</p>
+                </div>
+              </div>
+            </article>
+
+            <article class="lesson-card unit-panel unit-content hide" id="u6">
+              <div class="eyebrow">Unidad 6</div>
+              <h4>Esqueleto axial: cabeza, columna y tórax</h4>
+              <p class="lead">El esqueleto axial constituye el eje central longitudinal del cuerpo del animal. Su principal función es albergar y proteger el sistema nervioso central (encéfalo y médula espinal) y los órganos cardiorrespiratorios vitales del tórax.</p>
+              
+              <section>
+                <h5>El Cráneo</h5>
+                <p>Estructuralmente complejo, se divide en dos regiones principales:</p>
+                <ul class="icon-list">
+                  <li><strong>Neurocráneo:</strong> Forma la bóveda que protege el encéfalo. Huesos destacados: frontal, parietal, occipital (con los cóndilos que articulan con la 1ª vértebra), temporal (contiene el oído interno y medio), esfenoides y etmoides.</li>
+                  <li><strong>Esplacnocráneo:</strong> Son los huesos faciales que dan soporte a las vías aéreas, tracto digestivo superior y órganos de los sentidos. Incluye maxilar, premaxilar, mandíbula (con sus ramas y cuerpo), hueso cigomático (arco), nasal, lacrimal, palatino y vómer.</li>
+                </ul>
+                <p><strong>Morfología craneal canina:</strong> Las razas <em>dolicocéfalas</em> (ej. Galgo) tienen un cráneo alargado. Las <em>mesocéfalas</em> (ej. Beagle) mantienen proporciones intermedias. Las <em>braquicéfalas</em> (ej. Bulldog, Pug, Gato Persa) presentan cráneos anchos, narices cortas y mandíbulas reducidas, lo que origina el síndrome braquiocefálico por acortamiento de las vías respiratorias.</p>
+              </section>
+
+              <section>
+                <h5>Columna Vertebral y Fórmulas Vertebrales</h5>
+                <p>La columna es un puente flexible compuesto por vértebras irregulares, discos intervertebrales y ligamentos. Cada vértebra típica tiene un <strong>cuerpo vertebral</strong> (ventral, para soporte), un <strong>arco neural</strong> (que forma el foramen por donde pasa la médula), una <strong>apófisis espinosa</strong> (dorsal) y <strong>apófisis transversas</strong> (laterales).</p>
+                <table class="comparison-table" style="margin-bottom: var(--space-4);">
+                  <thead>
+                    <tr>
+                      <th>Región</th>
+                      <th>Perro (Canis lupus familiaris)</th>
+                      <th>Gato (Felis catus)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Cervical (Cuello)</td>
+                      <td>C7 (Atlas es C1, Axis es C2)</td>
+                      <td>C7</td>
+                    </tr>
+                    <tr>
+                      <td>Torácica (Tórax)</td>
+                      <td>T13 (Espinosas altas)</td>
+                      <td>T13</td>
+                    </tr>
+                    <tr>
+                      <td>Lumbar (Abdomen)</td>
+                      <td>L7 (Transversas largas)</td>
+                      <td>L7</td>
+                    </tr>
+                    <tr>
+                      <td>Sacra (Pelvis)</td>
+                      <td>S3 (Fusionadas en hueso sacro)</td>
+                      <td>S3</td>
+                    </tr>
+                    <tr>
+                      <td>Caudal / Coccígea</td>
+                      <td>Cy 6 a 23 (Variable por raza)</td>
+                      <td>Cy 18 a 23 (Menos en raza Manx)</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+
+              <section>
+                <h5>La Caja Torácica</h5>
+                <p>Compuesta por las vértebras torácicas dorsalmente, las costillas lateralmente y el esternón ventralmente. En perros y gatos hay <strong>13 pares de costillas</strong>:</p>
+                <ul class="icon-list">
+                  <li><strong>9 pares verdaderas (esternales):</strong> Articulan directamente con el esternón a través del cartílago costal.</li>
+                  <li><strong>4 pares falsas (asternales):</strong> Su cartílago se une al de la costilla anterior, formando el arco costal. El último par suele ser flotante (no se une).</li>
+                </ul>
+                <p>El esternón está formado por 8 segmentos óseos llamados esternebras. La primera es el <em>manubrio</em> y la última termina en el cartílago <em>xifoides</em>.</p>
+              </section>
+
+              <div class="clinical-note">
+                <div class="cn-icon">⚠️</div>
+                <div>
+                  <h5>Atención clínica: Hernia Discal</h5>
+                  <p>Entre cada cuerpo vertebral existe un disco intervertebral con un núcleo pulposo amortiguador. En razas condrodistróficas (como el Teckel o el Bulldog Francés), estos discos pueden degenerar prematuramente y herniarse hacia arriba, presionando la médula espinal (canal vertebral). Esta compresión neurológica aguda provoca dolor intenso, paresia o parálisis irreversible si no se trata quirúrgicamente a tiempo de urgencia.</p>
+                </div>
+              </div>
+            </article>
+
+            <article class="lesson-card unit-panel unit-content hide" id="u7">
+              <div class="eyebrow">Unidad 7</div>
+              <h4>Esqueleto apendicular: miembro torácico y pelviano</h4>
+              <p class="lead">El esqueleto apendicular incluye los huesos de los miembros anteriores y posteriores, responsables de sostener el peso, amortiguar impactos y generar la propulsión durante la carrera. A diferencia de humanos, el miembro anterior soporta cerca del 60% del peso corporal.</p>
+              
+              <section>
+                <h5>Miembro Torácico (Anterior)</h5>
+                <p>Se une al esqueleto axial mediante músculos (sinsarcosis), sin una articulación ósea directa, gracias a la evolución para absorber el impacto del salto.</p>
+                <ul class="icon-list">
+                  <li><strong>Cintura escapular:</strong> Formada principalmente por la <em>escápula</em>, un hueso plano. Presenta una espina lateral, la fosa supraespinosa (craneal), fosa infraespinosa (caudal), acromion (distal) y la cavidad glenoidea que articula con el brazo. La clavícula es un vestigio pequeño o ausente.</li>
+                  <li><strong>Brazo:</strong> El <em>húmero</em>. Destaca su cabeza humeral (proximal), tubérculos mayor y menor, surco intertubercular y, en distal, los cóndilos y epicóndilos articulares del codo.</li>
+                  <li><strong>Antebrazo:</strong> <em>Radio y Cúbito (Ulna)</em>. El cúbito posee el <em>olécranon</em> (punto del codo) y la incisura troclear. El radio es el hueso principal de soporte de peso en el antebrazo. Terminan en apófisis estiloides.</li>
+                  <li><strong>Mano (Carpo y Dígitos):</strong> El carpo tiene 7 huesos pequeños en dos filas (la fila proximal incluye radial, ulnar y accesorio). Hay 5 huesos metacarpianos (I a V) y las falanges (P1 proximal, P2 media, P3 distal con el proceso ungular). El dedo I (pulgar) no toca el suelo y no tiene P2.</li>
+                </ul>
+              </section>
+
+              <section>
+                <h5>Miembro Pelviano (Posterior)</h5>
+                <p>Es el motor principal de la locomoción, articulado sólidamente a la columna para transferir toda la fuerza motriz.</p>
+                <ul class="icon-list">
+                  <li><strong>Cintura pélvica:</strong> La <em>pelvis</em>, formada por la fusión de Ilion (craneal), Isquion (caudal) y Pubis (ventral). Ambos lados se unen en la sínfisis pélvica. La cavidad articular para el fémur es el <em>acetábulo</em>. Presenta el enorme foramen obturador.</li>
+                  <li><strong>Muslo:</strong> El <em>fémur</em>. El hueso más pesado. Tiene cabeza femoral, cuello, gran trocánter mayor (inserción glútea), trocánter menor y, en distal, la tróclea para la rótula y los cóndilos para la tibia.</li>
+                  <li><strong>Pierna:</strong> <em>Tibia y Peroné (Fíbula)</em>. La tibia soporta el peso, destacando los platillos tibiales y la prominente cresta/tuberosidad tibial anterior. El peroné es delgado y lateral.</li>
+                  <li><strong>Pie (Tarso y Dígitos):</strong> El tarso tiene 7 huesos, destacando el astrágalo (articula con la tibia) y el gran <em>calcáneo</em> (forma el corvejón e inserta el tendón de Aquiles). Siguen los huesos metatarsianos (II al V, el I suele faltar) y falanges de 4 dedos funcionales en contacto con el suelo.</li>
+                </ul>
+              </section>
+
+              <section>
+                <h5>Tabla Comparativa de Miembros</h5>
+                <table class="comparison-table">
+                  <thead>
+                    <tr>
+                      <th>Segmento</th>
+                      <th>Miembro Torácico</th>
+                      <th>Miembro Pelviano</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Cintura</td>
+                      <td>Escápula (libre, muscular)</td>
+                      <td>Pelvis (fusionada al sacro)</td>
+                    </tr>
+                    <tr>
+                      <td>Proximal</td>
+                      <td>Húmero (Brazo)</td>
+                      <td>Fémur (Muslo)</td>
+                    </tr>
+                    <tr>
+                      <td>Medio</td>
+                      <td>Radio y Cúbito</td>
+                      <td>Tibia y Peroné</td>
+                    </tr>
+                    <tr>
+                      <td>Articulación media</td>
+                      <td>Codo</td>
+                      <td>Rodilla (Estifle)</td>
+                    </tr>
+                    <tr>
+                      <td>Distal</td>
+                      <td>Carpo y Metacarpo (5 dedos)</td>
+                      <td>Tarso y Metatarso (4 dedos usualmente)</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+              
+              <div class="did-you-know">
+                <div class="dyk-icon">💡</div>
+                <div>
+                  <h5>¿Sabías que...? Diferencias de Dígitos</h5>
+                  <p>Tanto perros como gatos nacen con 5 dedos en las extremidades anteriores (uno elevado, el espolón) y 4 funcionales en las posteriores. Sin embargo, algunas razas de perros como el Mastín Español o el Pastor de Beauce presentan dobles espolones óseos en el miembro pelviano por estándar de raza. Por otro lado, la polidactilia (dedos extra) es una mutación genética sorprendentemente común en gatos, famosos por los llamados "gatos de Hemingway".</p>
+                </div>
+              </div>
+            </article>
+
+            <article class="lesson-card unit-panel unit-content hide" id="u8">
+              <div class="eyebrow">Unidad 8</div>
+              <h4>Sistema muscular y contracción motora</h4>
+              <p class="lead">El sistema muscular representa casi la mitad del peso corporal. Constituye el tejido activo que tira de las palancas óseas para producir movimiento, genera calor metabólico y asegura funciones automáticas de órganos vitales.</p>
+              
+              <section>
+                <h5>Tipos de Tejido Muscular</h5>
+                <ul class="icon-list">
+                  <li><strong>Esquelético:</strong> Estriado bajo el microscopio y de control voluntario (inervado por el sistema nervioso somático). Se encarga de la postura y locomoción.</li>
+                  <li><strong>Liso (Visceral):</strong> No estriado y de control involuntario (sistema nervioso autónomo). Se encuentra en las paredes del tracto digestivo, respiratorio, vasos sanguíneos, útero y vejiga. Produce movimientos lentos y sostenidos (peristaltismo).</li>
+                  <li><strong>Cardíaco:</strong> Estriado pero involuntario. Exclusivo del corazón. Posee marcapasos propio y células interconectadas (discos intercalares) que permiten una contracción rítmica y sincronizada.</li>
+                </ul>
+              </section>
+
+              <section>
+                <h5>Microanatomía de la Contracción Esquelética</h5>
+                <p>El músculo esquelético está envuelto en tejido conectivo (epimisio, perimisio y endomisio). Sus células se llaman fibras musculares, las cuales contienen haces de <strong>miofibrillas</strong>. La unidad funcional de la miofibrilla es el <strong>sarcómero</strong>, delimitado por las líneas Z.</p>
+                <p>Dentro del sarcómero interactúan dos filamentos proteicos: <strong>Actina</strong> (filamentos finos) y <strong>Miosina</strong> (filamentos gruesos con cabezas). El mecanismo de contracción (modelo de deslizamiento de filamentos) funciona así:</p>
+                <ol style="color:var(--color-text-muted); font-size:var(--text-sm); margin-bottom:var(--space-4); padding-left:1.5rem;">
+                  <li>Un impulso nervioso libera acetilcolina en la placa motora.</li>
+                  <li>El retículo sarcoplásmico libera iones de Calcio (Ca++).</li>
+                  <li>El Ca++ se une a la troponina, desplazando a la tropomiosina, lo que expone los sitios de unión de la actina.</li>
+                  <li>Las cabezas de miosina, gastando energía celular (ATP), se unen a la actina y pivotan, acercando las líneas Z y acortando el sarcómero. El músculo se contrae.</li>
+                </ol>
+              </section>
+
+              <section>
+                <h5>Estructuras Anexas del Sistema</h5>
+                <p>Para transmitir la fuerza del músculo al hueso sin dañar los tejidos, el cuerpo utiliza:</p>
+                <ul class="icon-list">
+                  <li><strong>Tendones:</strong> Cordones fibrosos densos (colágeno tipo I) que unen músculo con hueso.</li>
+                  <li><strong>Aponeurosis:</strong> Tendones planos y anchos (como los de la pared abdominal o la línea alba).</li>
+                  <li><strong>Bolsas sinoviales (bursas):</strong> Sacos de líquido sinovial situados entre un tendón y un hueso para evitar la fricción.</li>
+                  <li><strong>Vainas tendinosas:</strong> Tubos sinoviales que envuelven tendones largos sometidos a mucha fricción (ej. extensores de los dedos).</li>
+                </ul>
+              </section>
+
+              <section>
+                <h5>Principales Músculos de Interés Clínico</h5>
+                <table class="comparison-table">
+                  <thead>
+                    <tr>
+                      <th>Músculo / Grupo</th>
+                      <th>Situación u Origen</th>
+                      <th>Acción Principal</th>
+                      <th>Relevancia ATV</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Masetero</td>
+                      <td>Arco cigomático (mandíbula)</td>
+                      <td>Cierra la boca (masticación)</td>
+                      <td>Propensa a miositis eosinofílica (perros).</td>
+                    </tr>
+                    <tr>
+                      <td>Tríceps braquial</td>
+                      <td>Escápula y húmero proximal</td>
+                      <td>Extensión del codo</td>
+                      <td>Soporte del peso al estar de pie.</td>
+                    </tr>
+                    <tr>
+                      <td>Cuádriceps femoral</td>
+                      <td>Ileon y fémur</td>
+                      <td>Extiende la rodilla</td>
+                      <td>Se inserta en la rótula. Atrofia rápida tras rotura de cruzado.</td>
+                    </tr>
+                    <tr>
+                      <td>Gastrocnemio</td>
+                      <td>Cóndilos distales del fémur</td>
+                      <td>Extiende el tarso (corvejón)</td>
+                      <td>Forma el tendón de Aquiles (roturas graves).</td>
+                    </tr>
+                    <tr>
+                      <td>Epaxiales lumbares</td>
+                      <td>Dorso de la columna</td>
+                      <td>Extensores de columna</td>
+                      <td><strong>Zona ideal para inyecciones intramusculares</strong> profundas.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+
+              <div class="clinical-note">
+                <div class="cn-icon">⚠️</div>
+                <div>
+                  <h5>Atención clínica: Inyecciones intramusculares (IM)</h5>
+                  <p>Conocer los vientres musculares es crítico para el ATV al inyectar medicación. Si se usa la región lumbar (músculos epaxiales) hay poco riesgo anatómico. Si se usa la parte posterior del muslo (semitendinoso/semimembranoso), siempre debe inyectarse en dirección caudal/lateral para evitar puncionar el nervio ciático que discurre medialmente por la pierna, lo cual causaría una parálisis permanente y grave dolor.</p>
+                </div>
+              </div>
+            </article>
+
+            <article class="lesson-card unit-panel unit-content hide" id="u9">
+              <div class="eyebrow">Unidad 9 · Repaso y Evaluación</div>
+              <h4>Actividades interactivas del módulo</h4>
+              <p class="lead">Consolida todos los contenidos del módulo con tres actividades progresivas: tarjetas de repaso, ejercicio de completar texto y examen de evaluación con corrección automática.</p>
+              <div class="chips">
+                <span class="chip">🃏 8 Flashcards</span>
+                <span class="chip">✏️ Completar texto</span>
+                <span class="chip">📝 10 preguntas</span>
+                <span class="chip">⏱ ~15 min</span>
+              </div>
+
+              <!-- ── BLOQUE 1: FLASHCARDS ─────────────── -->
+              <section>
+                <h5>1. Tarjetas de repaso</h5>
+                <p style="color:var(--c-text-m);font-size:var(--text-sm);margin-bottom:1rem;">Haz clic en cada tarjeta para girarla y ver la definición. Repasa todas antes del test.</p>
+                <div class="flashcards-grid">
+
+                  <div class="flashcard">
+                    <div class="fc-inner">
+                      <div class="fc-face front"><small>Término anatómico</small><strong>Dorsal</strong><span>Clic para girar →</span></div>
+                      <div class="fc-face back"><small>Definición</small><strong>Hacia la espalda</strong><span>Opuesto a ventral. Ej: apófisis espinosa.</span></div>
+                    </div>
+                  </div>
+
+                  <div class="flashcard">
+                    <div class="fc-inner">
+                      <div class="fc-face front"><small>Plano anatómico</small><strong>Plano Sagital</strong><span>Clic para girar →</span></div>
+                      <div class="fc-face back"><small>Definición</small><strong>Divide izquierda y derecha</strong><span>El plano sagital medio crea dos mitades simétricas.</span></div>
+                    </div>
+                  </div>
+
+                  <div class="flashcard">
+                    <div class="fc-inner">
+                      <div class="fc-face front"><small>Hueso sesamoideo</small><strong>Rótula (Patela)</strong><span>Clic para girar →</span></div>
+                      <div class="fc-face back"><small>Función</small><strong>Transmite tracción del cuádriceps</strong><span>El más grande. Protege la articulación de la rodilla.</span></div>
+                    </div>
+                  </div>
+
+                  <div class="flashcard">
+                    <div class="fc-inner">
+                      <div class="fc-face front"><small>Articulación</small><strong>Sinovial</strong><span>Clic para girar →</span></div>
+                      <div class="fc-face back"><small>Componentes</small><strong>Cápsula + membrana + líquido</strong><span>La más móvil: esférica (cadera), bisagra (codo).</span></div>
+                    </div>
+                  </div>
+
+                  <div class="flashcard">
+                    <div class="fc-inner">
+                      <div class="fc-face front"><small>Músculo</small><strong>Sarcómero</strong><span>Clic para girar →</span></div>
+                      <div class="fc-face back"><small>Definición</small><strong>Unidad contráctil mínima</strong><span>Actina (fino) + miosina (grueso). Base de la contracción.</span></div>
+                    </div>
+                  </div>
+
+                  <div class="flashcard">
+                    <div class="fc-inner">
+                      <div class="fc-face front"><small>Hueso largo</small><strong>Fémur</strong><span>Clic para girar →</span></div>
+                      <div class="fc-face back"><small>Localización</small><strong>Muslo — miembro pelviano</strong><span>El más largo del cuerpo. Conecta pelvis con rodilla.</span></div>
+                    </div>
+                  </div>
+
+                  <div class="flashcard">
+                    <div class="fc-inner">
+                      <div class="fc-face front"><small>Movimiento</small><strong>Abducción</strong><span>Clic para girar →</span></div>
+                      <div class="fc-face back"><small>Definición</small><strong>Aleja del plano medio</strong><span>Opuesto a aducción. Clave en exploración de cadera.</span></div>
+                    </div>
+                  </div>
+
+                  <div class="flashcard">
+                    <div class="fc-inner">
+                      <div class="fc-face front"><small>Tejido muscular</small><strong>Músculo Liso</strong><span>Clic para girar →</span></div>
+                      <div class="fc-face back"><small>Características</small><strong>Involuntario, no estriado</strong><span>Vísceras, vasos sanguíneos. Controlado por el SNA.</span></div>
+                    </div>
+                  </div>
+
+                </div>
+                <p class="fc-hint">💡 Repasa las tarjetas falladas antes de pasar al test.</p>
+              </section>
+
+              <!-- ── BLOQUE 2: RELLENAR HUECOS ───────── -->
+              <section style="margin-top:2rem">
+                <h5>2. Completa el texto</h5>
+                <p style="color:var(--c-text-m);font-size:var(--text-sm);margin-bottom:1rem;">Escribe en minúsculas, sin tildes. Pulsa <strong>Comprobar</strong> para ver el resultado.</p>
+                <div class="fill-activity" data-fill-form>
+                  <p class="fill-text">
+                    En anatomía, la posición <input type="text" class="blank-input" data-answer="craneal" placeholder="________"> indica orientación hacia la cabeza, mientras que <input type="text" class="blank-input" data-answer="caudal" placeholder="________"> indica hacia la cola. El esqueleto <input type="text" class="blank-input" data-answer="axial" placeholder="________"> incluye el cráneo, la columna y el tórax. Los huesos largos crecen mediante osificación <input type="text" class="blank-input" data-answer="endocondral" placeholder="________"> en la placa de crecimiento. La articulación de la cadera es de tipo <input type="text" class="blank-input" data-answer="sinovial" placeholder="________"> y contiene líquido <input type="text" class="blank-input" data-answer="sinovial" placeholder="________">. El hueso del muslo es el <input type="text" class="blank-input" data-answer="femur" placeholder="________"> y el músculo extensor de la rodilla es el <input type="text" class="blank-input" data-answer="cuadriceps" placeholder="________"> femoral.
+                  </p>
+                  <div style="display:flex;gap:1rem;margin-top:1.25rem;flex-wrap:wrap;">
+                    <button type="button" class="btn btn-primary btn-check-fill">✓ Comprobar respuestas</button>
+                    <button type="button" class="btn btn-outline btn-reset-fill">↺ Reiniciar</button>
+                  </div>
+                  <div class="fill-feedback"></div>
+                </div>
+              </section>
+
+              <!-- ── BLOQUE 3: TEST TIPO EXAMEN ──────── -->
+              <section style="margin-top:2rem">
+                <h5>3. Prueba tipo examen · 10 preguntas</h5>
+                <p style="color:var(--c-text-m);font-size:var(--text-sm);margin-bottom:1.25rem;">Selecciona la mejor respuesta. Al finalizar verás la corrección visual y tu nota final.</p>
+
+                <form class="quiz-block" data-exam-form>
+                  <h5 style="font-size:1rem;border-bottom:1px solid var(--c-divider);padding-bottom:1rem;">📋 Evaluación — Sistema Músculo-Esquelético</h5>
+
+                  <div class="question-block">
+                    <p class="q-text"><span class="q-num">1</span>¿Qué plano anatómico divide el cuerpo en porción craneal y caudal?</p>
+                    <div class="options-grid">
+                      <label class="option-label"><input type="radio" name="exam_q1" value="bad"> Plano Sagital Medio</label>
+                      <label class="option-label"><input type="radio" name="exam_q1" value="ok"> Plano Transversal</label>
+                      <label class="option-label"><input type="radio" name="exam_q1" value="bad"> Plano Frontal o Dorsal</label>
+                    </div>
+                  </div>
+
+                  <div class="question-block">
+                    <p class="q-text"><span class="q-num">2</span>¿Cuál de estos huesos pertenece al miembro torácico?</p>
+                    <div class="options-grid">
+                      <label class="option-label"><input type="radio" name="exam_q2" value="bad"> Fémur</label>
+                      <label class="option-label"><input type="radio" name="exam_q2" value="bad"> Tibia</label>
+                      <label class="option-label"><input type="radio" name="exam_q2" value="ok"> Radio</label>
+                    </div>
+                  </div>
+
+                  <div class="question-block">
+                    <p class="q-text"><span class="q-num">3</span>El movimiento que aleja una extremidad del plano medio se llama:</p>
+                    <div class="options-grid">
+                      <label class="option-label"><input type="radio" name="exam_q3" value="ok"> Abducción</label>
+                      <label class="option-label"><input type="radio" name="exam_q3" value="bad"> Aducción</label>
+                      <label class="option-label"><input type="radio" name="exam_q3" value="bad"> Pronación</label>
+                    </div>
+                  </div>
+
+                  <div class="question-block">
+                    <p class="q-text"><span class="q-num">4</span>¿Qué músculo está bajo control voluntario y se une al hueso mediante tendones?</p>
+                    <div class="options-grid">
+                      <label class="option-label"><input type="radio" name="exam_q4" value="bad"> Músculo Liso</label>
+                      <label class="option-label"><input type="radio" name="exam_q4" value="ok"> Músculo Esquelético</label>
+                      <label class="option-label"><input type="radio" name="exam_q4" value="bad"> Músculo Cardíaco</label>
+                    </div>
+                  </div>
+
+                  <div class="question-block">
+                    <p class="q-text"><span class="q-num">5</span>¿Cuántas vértebras torácicas tienen generalmente el perro y el gato?</p>
+                    <div class="options-grid">
+                      <label class="option-label"><input type="radio" name="exam_q5" value="bad"> 7 vértebras</label>
+                      <label class="option-label"><input type="radio" name="exam_q5" value="bad"> 10 vértebras</label>
+                      <label class="option-label"><input type="radio" name="exam_q5" value="ok"> 13 vértebras</label>
+                    </div>
+                  </div>
+
+                  <div class="question-block">
+                    <p class="q-text"><span class="q-num">6</span>¿Cuál es la unidad contráctil mínima del músculo esquelético?</p>
+                    <div class="options-grid">
+                      <label class="option-label"><input type="radio" name="exam_q6" value="bad"> Miofibrilla</label>
+                      <label class="option-label"><input type="radio" name="exam_q6" value="ok"> Sarcómero</label>
+                      <label class="option-label"><input type="radio" name="exam_q6" value="bad"> Fibra muscular</label>
+                    </div>
+                  </div>
+
+                  <div class="question-block">
+                    <p class="q-text"><span class="q-num">7</span>¿Qué articulación conecta fémur, tibia y rótula en el miembro posterior?</p>
+                    <div class="options-grid">
+                      <label class="option-label"><input type="radio" name="exam_q7" value="bad"> Articulación del carpo</label>
+                      <label class="option-label"><input type="radio" name="exam_q7" value="ok"> Articulación fémoro-tibio-rotuliana (rodilla)</label>
+                      <label class="option-label"><input type="radio" name="exam_q7" value="bad"> Articulación coxofemoral (cadera)</label>
+                    </div>
+                  </div>
+
+                  <div class="question-block">
+                    <p class="q-text"><span class="q-num">8</span>La osificación endocondral se produce en:</p>
+                    <div class="options-grid">
+                      <label class="option-label"><input type="radio" name="exam_q8" value="bad"> El periostio de los huesos planos</label>
+                      <label class="option-label"><input type="radio" name="exam_q8" value="ok"> La placa fisaria de los huesos largos</label>
+                      <label class="option-label"><input type="radio" name="exam_q8" value="bad"> La membrana sinovial articular</label>
+                    </div>
+                  </div>
+
+                  <div class="question-block">
+                    <p class="q-text"><span class="q-num">9</span>¿Qué función tiene la médula ósea roja?</p>
+                    <div class="options-grid">
+                      <label class="option-label"><input type="radio" name="exam_q9" value="ok"> Hematopoyesis (producción de células sanguíneas)</label>
+                      <label class="option-label"><input type="radio" name="exam_q9" value="bad"> Almacenaje de grasa metabólica</label>
+                      <label class="option-label"><input type="radio" name="exam_q9" value="bad"> Producción de líquido sinovial</label>
+                    </div>
+                  </div>
+
+                  <div class="question-block">
+                    <p class="q-text"><span class="q-num">10</span>Zona más segura para inyecciones IM en el perro, alejada del nervio ciático:</p>
+                    <div class="options-grid">
+                      <label class="option-label"><input type="radio" name="exam_q10" value="bad"> Cara medial del muslo (semitendinoso)</label>
+                      <label class="option-label"><input type="radio" name="exam_q10" value="ok"> Músculos epaxiales de la región lumbar</label>
+                      <label class="option-label"><input type="radio" name="exam_q10" value="bad"> Músculos cervicales del cuello</label>
+                    </div>
+                  </div>
+
+                  <div style="display:flex;gap:1rem;margin-top:2rem;flex-wrap:wrap;">
+                    <button type="submit" class="btn btn-primary" style="flex:1;">📊 Finalizar y corregir examen</button>
+                    <button type="button" class="btn btn-outline btn-reset-exam">↺ Reiniciar examen</button>
+                  </div>
+                  <div class="exam-result"></div>
+                </form>
+              </section>
+            </article>
+
+</div></div>
+
+        <!-- ══════════════════════════════════════════════
+             BLOQUE DE ACTIVIDADES INTERACTIVAS
+             ══════════════════════════════════════════════ -->
+        <section id="activities-block">
+
+          <!-- CABECERA -->
+          <div class="sec-head" style="margin-bottom:2rem">
+            <div>
+              <h3 style="font-family:var(--font-display);font-size:var(--text-xl);color:var(--c-text)">Actividades interactivas</h3>
+              <p style="color:var(--c-text-m);margin-top:.4rem">Tres bloques progresivos: repasa con tarjetas, completa el texto y demuestra tus conocimientos en el examen.</p>
+            </div>
+            <div style="display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;">
+              <span style="background:#E6F7F2;color:#1A6B41;border-radius:999px;padding:.3rem .8rem;font-size:.72rem;font-weight:700;">🃏 Flashcards</span>
+              <span style="background:#FEF3D0;color:#8A5F00;border-radius:999px;padding:.3rem .8rem;font-size:.72rem;font-weight:700;">✏️ Completar texto</span>
+              <span style="background:#DDF0F4;color:#004F6B;border-radius:999px;padding:.3rem .8rem;font-size:.72rem;font-weight:700;">📝 Examen 10 preguntas</span>
+            </div>
+          </div>
+
+          <!-- ── 1. FLASHCARDS ──────────────────────── -->
+          <div style="background:#fff;border:1px solid #E2EDF0;border-radius:24px;padding:2rem;box-shadow:0 2px 12px rgba(0,60,80,.06);margin-bottom:2rem;">
+            <h4 style="font-family:var(--font-display);font-size:1.1rem;margin:0 0 .4rem;color:var(--c-text)">1. Tarjetas de repaso</h4>
+            <p style="color:var(--c-text-m);font-size:.875rem;margin:0 0 1.5rem">Haz clic en cada tarjeta para girarla. Domínalas todas antes de pasar al examen.</p>
+
+            <div class="atv-flashcards">
+              <div class="atv-fc" onclick="this.classList.toggle('atv-flipped')">
+                <div class="atv-fc-in">
+                  <div class="atv-face atv-front"><span>Término</span><strong>Dorsal</strong><small>Clic para ver ▶</small></div>
+                  <div class="atv-face atv-back"><span>Hacia la espalda / columna</span><strong>↔ Opuesto: Ventral</strong><small>Ej: apófisis espinosa dorsal</small></div>
+                </div>
+              </div>
+              <div class="atv-fc" onclick="this.classList.toggle('atv-flipped')">
+                <div class="atv-fc-in">
+                  <div class="atv-face atv-front"><span>Plano</span><strong>Sagital Medio</strong><small>Clic para ver ▶</small></div>
+                  <div class="atv-face atv-back"><span>Divide en izquierda y derecha</span><strong>Crea dos mitades simétricas</strong><small>Paralelos → planos parasagitales</small></div>
+                </div>
+              </div>
+              <div class="atv-fc" onclick="this.classList.toggle('atv-flipped')">
+                <div class="atv-fc-in">
+                  <div class="atv-face atv-front"><span>Hueso</span><strong>Rótula</strong><small>Clic para ver ▶</small></div>
+                  <div class="atv-face atv-back"><span>Hueso sesamoideo más grande</span><strong>Transmite tracción del cuádriceps</strong><small>Protege la articulación de la rodilla</small></div>
+                </div>
+              </div>
+              <div class="atv-fc" onclick="this.classList.toggle('atv-flipped')">
+                <div class="atv-fc-in">
+                  <div class="atv-face atv-front"><span>Articulación</span><strong>Sinovial</strong><small>Clic para ver ▶</small></div>
+                  <div class="atv-face atv-back"><span>Cápsula + membrana + líquido</span><strong>La más móvil del cuerpo</strong><small>Tipos: esférica, bisagra, troclear</small></div>
+                </div>
+              </div>
+              <div class="atv-fc" onclick="this.classList.toggle('atv-flipped')">
+                <div class="atv-fc-in">
+                  <div class="atv-face atv-front"><span>Músculo</span><strong>Sarcómero</strong><small>Clic para ver ▶</small></div>
+                  <div class="atv-face atv-back"><span>Unidad contráctil mínima</span><strong>Actina (fino) + Miosina (grueso)</strong><small>Base molecular de la contracción</small></div>
+                </div>
+              </div>
+              <div class="atv-fc" onclick="this.classList.toggle('atv-flipped')">
+                <div class="atv-fc-in">
+                  <div class="atv-face atv-front"><span>Hueso largo</span><strong>Fémur</strong><small>Clic para ver ▶</small></div>
+                  <div class="atv-face atv-back"><span>Hueso más largo del cuerpo</span><strong>Muslo — miembro pelviano</strong><small>Une pelvis (cadera) con rodilla</small></div>
+                </div>
+              </div>
+              <div class="atv-fc" onclick="this.classList.toggle('atv-flipped')">
+                <div class="atv-fc-in">
+                  <div class="atv-face atv-front"><span>Movimiento</span><strong>Abducción</strong><small>Clic para ver ▶</small></div>
+                  <div class="atv-face atv-back"><span>Aleja del plano medio</span><strong>↔ Opuesto: Aducción</strong><small>Clave en exploración de cadera</small></div>
+                </div>
+              </div>
+              <div class="atv-fc" onclick="this.classList.toggle('atv-flipped')">
+                <div class="atv-fc-in">
+                  <div class="atv-face atv-front"><span>Osificación</span><strong>Endocondral</strong><small>Clic para ver ▶</small></div>
+                  <div class="atv-face atv-back"><span>Sobre plantilla de cartílago</span><strong>Ocurre en la placa fisaria</strong><small>Responsable del crecimiento en longitud</small></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── 2. COMPLETAR TEXTO ──────────────────── -->
+          <div style="background:#fff;border:1px solid #E2EDF0;border-radius:24px;padding:2rem;box-shadow:0 2px 12px rgba(0,60,80,.06);margin-bottom:2rem;">
+            <h4 style="font-family:var(--font-display);font-size:1.1rem;margin:0 0 .4rem;color:var(--c-text)">2. Completa el texto</h4>
+            <p style="color:var(--c-text-m);font-size:.875rem;margin:0 0 1.5rem">Escribe la palabra exacta en cada hueco (minúsculas, sin tildes). Pulsa <strong>Comprobar</strong> para ver el resultado.</p>
+
+            <div id="fill-block" style="background:#F0F7F9;border-radius:16px;padding:1.5rem;line-height:2.4;font-size:.96rem;color:var(--c-text)">
+              En anatomía veterinaria, la posición
+              <input type="text" class="atv-blank" data-ans="craneal" placeholder="____" title="Hacia la cabeza">
+              orienta hacia la cabeza, mientras que
+              <input type="text" class="atv-blank" data-ans="caudal" placeholder="____" title="Hacia la cola">
+              orienta hacia la cola. El esqueleto
+              <input type="text" class="atv-blank" data-ans="axial" placeholder="____" title="Cráneo + columna + tórax">
+              comprende el cráneo, la columna vertebral y el tórax. Los huesos largos crecen en longitud por osificación
+              <input type="text" class="atv-blank" data-ans="endocondral" placeholder="___________" title="Sobre cartílago">
+              en la placa fisaria. La articulación de la cadera es de tipo
+              <input type="text" class="atv-blank" data-ans="sinovial" placeholder="_______" title="La más móvil">
+              y está lubricada por líquido
+              <input type="text" class="atv-blank" data-ans="sinovial" placeholder="_______" title="Producido por la membrana">
+              . El hueso del muslo se denomina
+              <input type="text" class="atv-blank" data-ans="femur" placeholder="_____" title="Hueso largo del muslo">
+              y el músculo extensor de la rodilla es el
+              <input type="text" class="atv-blank" data-ans="cuadriceps" placeholder="_________" title="Grupo de 4 músculos">
+              femoral.
+            </div>
+
+            <div style="display:flex;gap:1rem;margin-top:1.25rem;flex-wrap:wrap;">
+              <button class="btn btn-primary" onclick="checkFill()">✓ Comprobar respuestas</button>
+              <button class="btn btn-outline" onclick="resetFill()">↺ Reiniciar</button>
+            </div>
+            <div id="fill-result" style="display:none;margin-top:1rem;padding:1rem 1.25rem;border-radius:14px;font-weight:600;font-size:.9rem;"></div>
+          </div>
+
+          <!-- ── 3. EXAMEN 10 PREGUNTAS ──────────────── -->
+          <div style="background:#fff;border:1px solid #E2EDF0;border-radius:24px;padding:2rem;box-shadow:0 2px 12px rgba(0,60,80,.06);">
+            <h4 style="font-family:var(--font-display);font-size:1.1rem;margin:0 0 .4rem;color:var(--c-text)">3. Examen de evaluación · 10 preguntas</h4>
+            <p style="color:var(--c-text-m);font-size:.875rem;margin:0 0 1.5rem">Selecciona la mejor respuesta. Al finalizar verás la corrección individual y tu nota.</p>
+
+            <div id="exam-questions" style="display:flex;flex-direction:column;gap:1.5rem;">
+
+              <div class="atv-q">
+                <p class="atv-q-text"><span class="atv-qn">1</span>¿Qué plano anatómico divide el cuerpo en porción craneal y caudal?</p>
+                <div class="atv-opts">
+                  <label class="atv-opt"><input type="radio" name="eq1" value="bad"> Plano Sagital Medio</label>
+                  <label class="atv-opt"><input type="radio" name="eq1" value="ok"> Plano Transversal</label>
+                  <label class="atv-opt"><input type="radio" name="eq1" value="bad"> Plano Frontal o Dorsal</label>
+                </div>
+              </div>
+
+              <div class="atv-q">
+                <p class="atv-q-text"><span class="atv-qn">2</span>¿Cuál de estos huesos pertenece al miembro torácico (extremidad anterior)?</p>
+                <div class="atv-opts">
+                  <label class="atv-opt"><input type="radio" name="eq2" value="bad"> Fémur</label>
+                  <label class="atv-opt"><input type="radio" name="eq2" value="bad"> Tibia</label>
+                  <label class="atv-opt"><input type="radio" name="eq2" value="ok"> Radio</label>
+                </div>
+              </div>
+
+              <div class="atv-q">
+                <p class="atv-q-text"><span class="atv-qn">3</span>El movimiento que aleja una extremidad del plano medio del cuerpo se llama:</p>
+                <div class="atv-opts">
+                  <label class="atv-opt"><input type="radio" name="eq3" value="ok"> Abducción</label>
+                  <label class="atv-opt"><input type="radio" name="eq3" value="bad"> Aducción</label>
+                  <label class="atv-opt"><input type="radio" name="eq3" value="bad"> Pronación</label>
+                </div>
+              </div>
+
+              <div class="atv-q">
+                <p class="atv-q-text"><span class="atv-qn">4</span>¿Qué tipo de tejido muscular está bajo control voluntario y se une al hueso mediante tendones?</p>
+                <div class="atv-opts">
+                  <label class="atv-opt"><input type="radio" name="eq4" value="bad"> Músculo Liso</label>
+                  <label class="atv-opt"><input type="radio" name="eq4" value="ok"> Músculo Esquelético</label>
+                  <label class="atv-opt"><input type="radio" name="eq4" value="bad"> Músculo Cardíaco</label>
+                </div>
+              </div>
+
+              <div class="atv-q">
+                <p class="atv-q-text"><span class="atv-qn">5</span>¿Cuántas vértebras torácicas tienen generalmente el perro y el gato?</p>
+                <div class="atv-opts">
+                  <label class="atv-opt"><input type="radio" name="eq5" value="bad"> 7 vértebras</label>
+                  <label class="atv-opt"><input type="radio" name="eq5" value="bad"> 10 vértebras</label>
+                  <label class="atv-opt"><input type="radio" name="eq5" value="ok"> 13 vértebras</label>
+                </div>
+              </div>
+
+              <div class="atv-q">
+                <p class="atv-q-text"><span class="atv-qn">6</span>¿Cuál es la unidad contráctil mínima del músculo esquelético?</p>
+                <div class="atv-opts">
+                  <label class="atv-opt"><input type="radio" name="eq6" value="bad"> Miofibrilla</label>
+                  <label class="atv-opt"><input type="radio" name="eq6" value="ok"> Sarcómero</label>
+                  <label class="atv-opt"><input type="radio" name="eq6" value="bad"> Fibra muscular completa</label>
+                </div>
+              </div>
+
+              <div class="atv-q">
+                <p class="atv-q-text"><span class="atv-qn">7</span>¿Qué articulación une el fémur, la tibia y la rótula en el miembro posterior?</p>
+                <div class="atv-opts">
+                  <label class="atv-opt"><input type="radio" name="eq7" value="bad"> Articulación del carpo</label>
+                  <label class="atv-opt"><input type="radio" name="eq7" value="ok"> Articulación fémoro-tibio-rotuliana (rodilla)</label>
+                  <label class="atv-opt"><input type="radio" name="eq7" value="bad"> Articulación coxofemoral (cadera)</label>
+                </div>
+              </div>
+
+              <div class="atv-q">
+                <p class="atv-q-text"><span class="atv-qn">8</span>¿Qué función tiene la médula ósea roja?</p>
+                <div class="atv-opts">
+                  <label class="atv-opt"><input type="radio" name="eq8" value="ok"> Hematopoyesis — producción de células sanguíneas</label>
+                  <label class="atv-opt"><input type="radio" name="eq8" value="bad"> Almacenaje de grasa metabólica</label>
+                  <label class="atv-opt"><input type="radio" name="eq8" value="bad"> Producción de líquido sinovial</label>
+                </div>
+              </div>
+
+              <div class="atv-q">
+                <p class="atv-q-text"><span class="atv-qn">9</span>La osificación endocondral ocurre en:</p>
+                <div class="atv-opts">
+                  <label class="atv-opt"><input type="radio" name="eq9" value="bad"> El periostio de los huesos planos</label>
+                  <label class="atv-opt"><input type="radio" name="eq9" value="ok"> La placa fisaria de los huesos largos</label>
+                  <label class="atv-opt"><input type="radio" name="eq9" value="bad"> La membrana sinovial articular</label>
+                </div>
+              </div>
+
+              <div class="atv-q">
+                <p class="atv-q-text"><span class="atv-qn">10</span>¿Qué zona es más segura para inyecciones intramusculares en el perro, lejos del nervio ciático?</p>
+                <div class="atv-opts">
+                  <label class="atv-opt"><input type="radio" name="eq10" value="bad"> Cara medial del muslo (semitendinoso)</label>
+                  <label class="atv-opt"><input type="radio" name="eq10" value="ok"> Músculos epaxiales de la región lumbar</label>
+                  <label class="atv-opt"><input type="radio" name="eq10" value="bad"> Músculos cervicales del cuello</label>
+                </div>
+              </div>
+
+            </div><!-- /exam-questions -->
+
+            <div style="display:flex;gap:1rem;margin-top:2rem;flex-wrap:wrap;">
+              <button class="btn btn-primary" style="flex:1;" onclick="checkExam()">📊 Corregir y ver resultados</button>
+              <button class="btn btn-outline" onclick="resetExam()">↺ Reiniciar examen</button>
+            </div>
+            <div id="exam-result" style="display:none;margin-top:1.5rem;padding:1.75rem;border-radius:18px;text-align:center;"></div>
+          </div><!-- /examen -->
+
+        </section><!-- /activities-block -->
+
+        <section>
+          <div class="sec-head">
+            <div>
+              <h3>Progreso del módulo</h3>
+              <p>Bloques listos para mostrar una experiencia académica medible.</p>
+            </div>
+          </div>
+          <div class="progress">
+            <div class="progress-card"><strong>Teoría</strong><div class="muted">7 lecciones disponibles</div><div class="bar"><span style="width:100%"></span></div></div>
+            <div class="progress-card"><strong>Repaso</strong><div class="muted">4 tarjetas interactivas</div><div class="bar"><span style="width:82%"></span></div></div>
+            <div class="progress-card"><strong>Evaluación</strong><div class="muted">2 quizzes activos</div><div class="bar"><span style="width:74%"></span></div></div>
+            <div class="progress-card"><strong>Escalado</strong><div class="muted">18 módulos pendientes</div><div class="bar"><span style="width:21%"></span></div></div>
+          </div>
+        </section>
+
+        <section class="footer-card">
+          <div>
+            <span class="pill pill-primary">Listo para presentar</span>
+            <h3 style="margin:.8rem 0 .35rem;font-family:var(--font-display)">Base visual y funcional para escalar el resto del campus</h3>
+            <p>El siguiente paso natural sería clonar esta estructura para cada tema, conectar usuarios reales y añadir persistencia de progreso.</p>
+          </div>
+          <button class="btn btn-primary" data-jump="campus-home">Volver a inicio</button>
+        </section>
+      </section>
+
+      <template id="dev-template">
+        <section class="dev-panel active">
+          <div class="dev-hero">
+            <span class="pill pill-dev">Próximamente</span>
+            <h3></h3>
+            <p class="muted">Este apartado ya aparece dentro del campus para la presentación, pero en la beta actual todavía no tiene contenido docente desplegado. La estructura está preparada para reutilizar el mismo sistema de unidades, teoría, actividades y evaluación.</p>
+            <div class="dev-grid">
+              <div class="skeleton"></div>
+              <div class="skeleton"></div>
+              <div class="skeleton"></div>
+              <div class="skeleton"></div>
+            </div>
+          </div>
+        </section>
+      </template>
+    </main>
+  </div>
+
+  <script src="js/app.js" defer></script>
+
+  <script id="atv-activities-js">
+    /* ── Fill blanks ─────────────────────────── */
+    function checkFill() {
+      const inputs = document.querySelectorAll('#fill-block .atv-blank');
+      let ok = 0;
+      inputs.forEach(inp => {
+        inp.classList.remove('ok','bad');
+        if(inp.value.trim().toLowerCase() === inp.dataset.ans) {
+          inp.classList.add('ok'); ok++;
+        } else {
+          inp.classList.add('bad');
+        }
+      });
+      const res = document.getElementById('fill-result');
+      res.style.display = 'block';
+      if(ok === inputs.length) {
+        res.style.background = '#D4F5E5'; res.style.color = '#1A6B41';
+        res.textContent = '✓ ¡Perfecto! Todos los huecos son correctos (' + ok + '/' + inputs.length + ').';
+      } else {
+        res.style.background = '#FDEEF0'; res.style.color = '#7B2D2D';
+        res.textContent = 'Correcto: ' + ok + '/' + inputs.length + '. Los huecos en rojo necesitan revisión.';
+      }
+    }
+    function resetFill() {
+      document.querySelectorAll('#fill-block .atv-blank').forEach(i => {
+        i.value = ''; i.classList.remove('ok','bad');
+      });
+      const res = document.getElementById('fill-result');
+      res.style.display = 'none'; res.textContent = '';
+    }
+
+    /* ── Exam ────────────────────────────────── */
+    function checkExam() {
+      const qs = document.querySelectorAll('#exam-questions .atv-q');
+      let total = qs.length, ok = 0, unanswered = 0;
+      qs.forEach((q,i) => {
+        const name = 'eq' + (i+1);
+        const opts = q.querySelectorAll('.atv-opt');
+        const sel = q.querySelector('input[name="' + name + '"]:checked');
+        opts.forEach(opt => opt.classList.remove('correct','wrong'));
+        if(!sel) { unanswered++; return; }
+        opts.forEach(opt => {
+          const r = opt.querySelector('input');
+          if(r.value === 'ok') opt.classList.add('correct');
+          if(r === sel.parentElement.querySelector('input') && sel.value !== 'ok') opt.classList.add('wrong');
+          // Simpler: mark correct answer always, mark selected wrong if bad
+        });
+        // Re-do more simply:
+        opts.forEach(opt => {
+          opt.classList.remove('correct','wrong');
+          const r = opt.querySelector('input');
+          if(r.value === 'ok') opt.classList.add('correct');
+        });
+        if(sel.value !== 'ok') { sel.closest('.atv-opt').classList.add('wrong'); }
+        if(sel.value === 'ok') ok++;
+      });
+      const res = document.getElementById('exam-result');
+      if(unanswered > 0) {
+        res.style.display='block';
+        res.style.background='#FDEEF0'; res.style.border='1px solid #F5C5CB';
+        res.innerHTML='<strong style="color:#7B2D2D">⚠ Responde todas las preguntas antes de corregir (' + unanswered + ' sin contestar).</strong>';
+        return;
+      }
+      const pct = Math.round(ok/total*100);
+      const grade = pct>=90?'Sobresaliente':pct>=75?'Notable':pct>=60?'Aprobado':'Suspenso';
+      const pass = pct >= 60;
+      res.style.display='block';
+      res.style.background = pass ? '#D4F5E5' : '#FDEEF0';
+      res.style.border = pass ? '1px solid #8EDFC0' : '1px solid #F5C5CB';
+      res.innerHTML =
+        '<div style="font-family:Nunito,sans-serif;font-size:2.5rem;font-weight:800;color:' + (pass?'#1A6B41':'#E74C3C') + ';line-height:1">' + pct + '%</div>' +
+        '<div style="color:#5A7A8A;margin:.4rem 0">' + ok + ' de ' + total + ' preguntas correctas</div>' +
+        '<div style="display:inline-block;margin-top:.75rem;padding:.5rem 1.5rem;border-radius:999px;background:' + (pass?'#2ECC71':'#E74C3C') + ';color:#fff;font-weight:700;font-size:1rem">' + grade + '</div>' +
+        '<p style="margin-top:1rem;color:#5A7A8A;font-size:.875rem">' +
+          (pass ? '¡Enhorabuena! Has superado la evaluación del módulo de Sistema Músculo-Esquelético.' :
+                  'No has alcanzado el 60% mínimo. Repasa las unidades marcadas en rojo y vuelve a intentarlo.') +
+        '</p>';
+    }
+    function resetExam() {
+      document.querySelectorAll('#exam-questions input[type=radio]').forEach(r => r.checked = false);
+      document.querySelectorAll('#exam-questions .atv-opt').forEach(o => o.classList.remove('correct','wrong'));
+      const res = document.getElementById('exam-result');
+      res.style.display='none'; res.innerHTML='';
+    }
+  </script>
+</body>
+</html>
