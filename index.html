@@ -90,52 +90,6 @@
 
   <a href="#contenido" class="sr-only">Saltar al contenido</a>
   
-  <template id="template-module-atv">
-    <!-- TEMPLATE-MODULE-ATV: Estructura mínima para un módulo -->
-    <section id="tema-X" class="content-panel hide" aria-hidden="true">
-      <div class="mod-header">
-        <div class="mod-header-info">
-          <h3><!-- SLOT: título módulo --></h3>
-          <p><!-- SLOT: descripción módulo --></p>
-        </div>
-        <div class="mod-progress-box" style="padding: 1rem; text-align: center; display: flex; align-items: center; justify-content: center;">
-          <p class="module-progress-text" style="margin: 0; font-size: var(--text-sm); font-weight: 600; color: var(--color-primary);">Este módulo tiene <!-- SLOT: total de unidades --> unidades. Marca las que completes.</p>
-        </div>
-      </div>
-
-      <div class="lesson-shell">
-        <aside class="unit-nav">
-          <h4>Unidades del tema</h4>
-          <div class="unit-list">
-            <button class="unit-btn active" data-unit="u1"><!-- SLOT: título unidad 1 en menú --></button>
-            <button class="unit-btn" data-unit="u2"><!-- SLOT: título unidad 2 en menú --></button>
-          </div>
-        </aside>
-
-        <div class="lesson-main">
-          <article class="lesson-card unit-panel unit-content" id="u1">
-            <div class="eyebrow">Unidad 1</div>
-            <h4><!-- SLOT: título unidad 1 --></h4>
-            <p class="lead"><!-- SLOT: contenido introductorio unidad 1 --></p>
-          </article>
-
-          <article class="lesson-card unit-panel unit-content hide" id="u2">
-            <div class="eyebrow">Unidad 2</div>
-            <h4><!-- SLOT: título unidad 2 --></h4>
-            <p class="lead"><!-- SLOT: contenido introductorio unidad 2 --></p>
-          </article>
-        </div>
-      </div>
-
-      <section class="footer-card">
-        <div>
-          <h3 style="margin:.8rem 0 .35rem;font-family:var(--font-display)">¡Buen trabajo!</h3>
-          <p>Has llegado al final de este módulo. Revisa las actividades si necesitas consolidar conocimientos.</p>
-        </div>
-        <button class="btn btn-primary" data-jump="campus-home">Volver a inicio</button>
-      </section>
-    </section>
-  </template>
 
   <div class="app">
     <aside class="sidebar">
