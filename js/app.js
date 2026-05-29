@@ -307,7 +307,7 @@
     if (pText) {
       pText.textContent = `Has completado ${completed} de ${total} unidades.`;
       if (completed === total) {
-        pText.style.color = 'var(--c-success)';
+        pText.style.color = '#2ECC71';
       } else {
         pText.style.color = 'var(--c-primary)';
       }
