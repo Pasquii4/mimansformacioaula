@@ -30,15 +30,21 @@
     allPanels().forEach(p => {
       p.classList.remove('active');
       p.classList.add('hide');
+      p.setAttribute('aria-hidden', 'true');
     });
     const target = document.getElementById(panelId);
     if (target) {
       target.classList.remove('hide');
       target.classList.add('active');
+      target.setAttribute('aria-hidden', 'false');
+      target.setAttribute('tabindex', '-1');
+      target.focus({ preventScroll: true });
     }
-    allModuleLinks().forEach(btn =>
-      btn.classList.toggle('active', btn.dataset.panel === panelId)
-    );
+    allModuleLinks().forEach(btn => {
+      const isActive = btn.dataset.panel === panelId;
+      btn.classList.toggle('active', isActive);
+      btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -66,32 +72,14 @@
   });
 
   /* ── CREAR PANELES PARA MÓDULOS "EN DESARROLLO" ───── */
-  const devModules = [
-    { id: 'tema-1',  title: '1. Material de consulta',                  desc: 'Repositorio de PDFs, guías rápidas, atlas visuales y glosarios de apoyo para el estudiante ATV.' },
-    { id: 'tema-2',  title: '2. Origen y domesticación del perro',       desc: 'Evolución del Canis lupus familiaris, etapas de domesticación y su impacto en la conducta y anatomía actuales.' },
-    { id: 'tema-3',  title: '3. Razas de perros',                        desc: 'Clasificación FCI, morfotipos, razas frecuentes en clínica veterinaria y predisposiciones patológicas.' },
-    { id: 'tema-4',  title: '4. Origen del gato',                        desc: 'Domesticación del Felis silvestris lybica, diferencias biológicas con el perro y base histórica.' },
-    { id: 'tema-5',  title: '5. Razas de gatos',                         desc: 'Principales razas reconocidas, morfología, temperamento y predisposiciones clínicas relevantes.' },
-    { id: 'tema-6',  title: '6. Fisiología celular',                     desc: 'Estructura y función celular, tipos de tejidos, transporte de membrana y metabolismo básico.' },
-    { id: 'tema-8',  title: '8. Nutrición y alimentación',               desc: 'Necesidades nutricionales, formulación de raciones, alimentos terapéuticos y soporte nutricional clínico.' },
-    { id: 'tema-9',  title: '9. Farmacología',                           desc: 'Principios de farmacocinética y farmacodinámica, grupos farmacológicos y administración de fármacos en pequeños animales.' },
-    { id: 'tema-10', title: '10. Exploración y manejo',                  desc: 'Técnicas de sujeción, exploración física sistemática y manejo del paciente canino y felino en clínica.' },
-    { id: 'tema-11', title: '11. Sistema inmunológico y vacunación',     desc: 'Inmunidad innata y adaptativa, protocolos de vacunación y serología aplicada en pequeños animales.' },
-    { id: 'tema-12', title: '12. Parásitos gastrointestinales',          desc: 'Nematodos, cestodos y protozoos de interés clínico en perro y gato: ciclo biológico, diagnóstico y tratamiento.' },
-    { id: 'tema-13', title: '13. Desparasitación externa',               desc: 'Ectoparásitos (pulgas, garrapatas, ácaros), productos antiparasitarios y protocolos de desparasitación.' },
-    { id: 'tema-14', title: '14. Órganos de los sentidos',               desc: 'Anatomía y función del ojo, oído, nariz y piel como órgano sensorial en perro y gato.' },
-    { id: 'tema-15', title: '15. Oftalmología',                          desc: 'Patologías oculares frecuentes, técnicas de exploración ocular y asistencia en procedimientos oftalmológicos.' },
-    { id: 'tema-16', title: '16. Otología',                              desc: 'Anatomía del oído, otitis externa y media, limpieza auricular y asistencia en otoscopia.' },
-    { id: 'tema-17', title: '17. Dermatología',                          desc: 'Lesiones cutáneas primarias y secundarias, dermatopatías frecuentes y apoyo diagnóstico en consulta.' },
-    { id: 'tema-18', title: '18. Prurito en perro y gato',              desc: 'Fisiopatología del prurito, abordaje diagnóstico diferencial y manejo del paciente pruriginoso.' },
-    { id: 'tema-19', title: '19. Etología',                              desc: 'Comportamiento normal y patológico en perro y gato, comunicación animal y bases del bienestar.' },
-  ];
+  const devModules = []; // All modules now have static HTML
 
   const mainEl = document.querySelector('main');
   devModules.forEach(mod => {
     const section = document.createElement('section');
     section.id = mod.id;
     section.className = 'content-panel hide';
+    section.setAttribute('aria-hidden', 'true');
     section.innerHTML = `
       <div class="dev-hero">
         <span class="pill pill-dev" style="margin-bottom:var(--sp-4);display:inline-flex;">🚧 En desarrollo</span>
@@ -124,16 +112,37 @@
   function initUnitNav() {
     const unitBtns = document.querySelectorAll('.unit-btn');
     unitBtns.forEach(btn => {
+      btn.setAttribute('role', 'tab');
+      btn.setAttribute('aria-selected', btn.classList.contains('active') ? 'true' : 'false');
+
+      btn.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          btn.click();
+        }
+      });
+
       btn.addEventListener('click', () => {
         const parentShell = btn.closest('.lesson-shell');
         if (!parentShell) return;
-        parentShell.querySelectorAll('.unit-btn').forEach(b => b.classList.remove('active'));
+        parentShell.querySelectorAll('.unit-btn').forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-selected', 'false');
+        });
         btn.classList.add('active');
+        btn.setAttribute('aria-selected', 'true');
+
         parentShell.querySelectorAll('.lesson-card').forEach(card => {
           card.classList.add('hide');
+          card.setAttribute('aria-hidden', 'true');
         });
         const targetCard = document.getElementById(btn.dataset.unit);
-        if (targetCard) targetCard.classList.remove('hide');
+        if (targetCard) {
+          targetCard.classList.remove('hide');
+          targetCard.setAttribute('aria-hidden', 'false');
+          targetCard.setAttribute('tabindex', '-1');
+          targetCard.focus({ preventScroll: true });
+        }
       });
     });
   }
@@ -141,153 +150,192 @@
 
   /* ── FLASHCARDS ───────────────────────────────────── */
   function initFlashcards() {
-    document.querySelectorAll('.flashcard').forEach(card => {
-      card.addEventListener('click', () => card.classList.toggle('flipped'));
+    const cards = document.querySelectorAll('.atv-fc');
+    if (!cards.length) return;
+    cards.forEach(card => {
+      card.removeAttribute('onclick');
+      card.setAttribute('role', 'button');
+      card.setAttribute('tabindex', '0');
+      card.setAttribute('aria-label', 'Tarjeta didáctica interactiva. Pulsa Enter o Espacio para girar y ver la respuesta.');
+
+      card.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          card.classList.toggle('atv-flipped');
+        }
+      });
+
+      card.addEventListener('click', () => card.classList.toggle('atv-flipped'));
     });
   }
   initFlashcards();
 
-  /* ── FILL IN THE BLANKS ───────────────────────────── */
-  function initFillBlanks() {
-    document.querySelectorAll('[data-fill-form]').forEach(form => {
-      const btn = form.querySelector('.btn-check-fill');
-      const feedback = form.querySelector('.fill-feedback');
-      if (!btn || !feedback) return;
+  /* ── FILL IN THE BLANKS (Global Engine) ────────────── */
+  window.checkFillBlock = function(blockId, resultId) {
+    const block = document.getElementById(blockId);
+    const res = document.getElementById(resultId);
+    if (!block || !res) return;
 
-      btn.addEventListener('click', () => {
-        const inputs = form.querySelectorAll('.blank-input');
-        let correct = 0;
-        inputs.forEach(input => {
-          const expected = (input.dataset.answer || '').trim().toLowerCase();
-          const given = input.value.trim().toLowerCase();
-          input.classList.remove('correct', 'wrong');
-          if (given === expected) {
-            input.classList.add('correct');
-            correct++;
-          } else {
-            input.classList.add('wrong');
-          }
-        });
-        feedback.classList.remove('show', 'ok', 'bad');
-        feedback.classList.add('show');
-        if (correct === inputs.length) {
-          feedback.classList.add('ok');
-          feedback.textContent = `✓ ¡Perfecto! Has completado correctamente los ${inputs.length} huecos.`;
-        } else {
-          feedback.classList.add('bad');
-          feedback.textContent = `Correcto: ${correct}/${inputs.length}. Los huecos en rojo necesitan revisión.`;
-        }
-      });
-
-      // Reset button
-      const resetBtn = form.querySelector('.btn-reset-fill');
-      if (resetBtn) {
-        resetBtn.addEventListener('click', () => {
-          form.querySelectorAll('.blank-input').forEach(i => {
-            i.value = '';
-            i.classList.remove('correct', 'wrong');
-          });
-          feedback.classList.remove('show', 'ok', 'bad');
-          feedback.textContent = '';
-        });
+    const inputs = block.querySelectorAll('.atv-blank');
+    let ok = 0;
+    inputs.forEach(inp => {
+      inp.classList.remove('ok', 'bad');
+      const given = inp.value.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      const expected = (inp.dataset.ans || '').trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      
+      if (given === expected) {
+        inp.classList.add('ok');
+        ok++;
+      } else {
+        inp.classList.add('bad');
       }
     });
-  }
-  initFillBlanks();
 
-  /* ── QUIZ DE PORTADA (data-quiz) ──────────────────── */
-  function initOldQuiz() {
-    document.querySelectorAll('form[data-quiz]').forEach(form => {
-      form.addEventListener('submit', e => {
-        e.preventDefault();
-        const selected = [...new FormData(form).values()];
-        const total = form.querySelectorAll('.q-old').length;
-        const correct = selected.filter(v => v === 'ok').length;
-        const feedback = form.querySelector('.feedback');
-        if (!feedback) return;
-        const complete = selected.length === total;
-        feedback.className = 'feedback show ' + ((complete && correct === total) ? 'ok' : 'bad');
-        if (!complete) {
-          feedback.textContent = 'Responde todas las preguntas antes de corregir.';
-        } else if (correct === total) {
-          feedback.textContent = `¡Muy bien! Has acertado ${correct} de ${total} preguntas.`;
-        } else {
-          feedback.textContent = `Has acertado ${correct} de ${total}. Revisa la teoría y vuelve a intentarlo.`;
-        }
-      });
+    res.style.display = 'block';
+    if (ok === inputs.length) {
+      res.style.background = '#D4F5E5'; res.style.color = '#1A6B41';
+      res.textContent = `✓ ¡Perfecto! Todos los huecos son correctos (${ok}/${inputs.length}).`;
+    } else {
+      res.style.background = '#FDEEF0'; res.style.color = '#7B2D2D';
+      res.textContent = `Correcto: ${ok}/${inputs.length}. Los huecos en rojo necesitan revisión.`;
+    }
+  };
+
+  window.resetFillBlock = function(blockId, resultId) {
+    const block = document.getElementById(blockId);
+    const res = document.getElementById(resultId);
+    if (!block || !res) return;
+
+    block.querySelectorAll('.atv-blank').forEach(inp => {
+      inp.value = '';
+      inp.classList.remove('ok', 'bad');
     });
-  }
-  initOldQuiz();
 
-  /* ── EXAMEN TIPO TEST (U9) ─────────────────────────── */
-  function initExam() {
-    document.querySelectorAll('[data-exam-form]').forEach(form => {
-      form.addEventListener('submit', e => {
-        e.preventDefault();
-        const fd = new FormData(form);
-        const questions = form.querySelectorAll('.question-block');
-        let answered = 0, correct = 0, total = questions.length;
+    res.style.display = 'none';
+    res.textContent = '';
+  };
 
-        questions.forEach((qBlock, idx) => {
-          const name = `exam_q${idx + 1}`;
-          const val  = fd.get(name);
-          const opts = qBlock.querySelectorAll('.option-label');
+  /* ── EXAM ENGINE (Global) ───────────────────────────── */
+  window.checkExamBlock = function(containerId, resultId) {
+    const container = document.getElementById(containerId);
+    const res = document.getElementById(resultId);
+    if (!container || !res) return;
 
-          // Reset styles
-          opts.forEach(opt => opt.classList.remove('correct-answer', 'wrong-answer'));
+    const qs = container.querySelectorAll('.atv-q');
+    let total = qs.length, ok = 0, unanswered = 0;
 
-          if (val !== null) {
-            answered++;
-            opts.forEach(opt => {
-              const radio = opt.querySelector('input[type="radio"]');
-              if (!radio) return;
-              if (radio.value === 'ok') opt.classList.add('correct-answer');
-              if (radio.value === val && val !== 'ok') opt.classList.add('wrong-answer');
-            });
-            if (val === 'ok') correct++;
-          }
-        });
+    qs.forEach((q) => {
+      const opts = q.querySelectorAll('.atv-opt');
+      // Búsqueda del radio button seleccionado dentro de este bloque de pregunta
+      const sel = q.querySelector('input[type="radio"]:checked');
+      
+      opts.forEach(opt => opt.classList.remove('correct', 'wrong'));
 
-        const result = form.querySelector('.exam-result');
-        if (!result) return;
+      if (!sel) {
+        unanswered++;
+        return;
+      }
 
-        if (answered < total) {
-          result.className = 'exam-result show fail';
-          result.innerHTML = `<div class="score" style="color:var(--c-danger)">⚠</div>
-            <div class="score-label">Responde todas las preguntas antes de finalizar.</div>`;
-          return;
-        }
-
-        const pct = Math.round((correct / total) * 100);
-        const pass = pct >= 60;
-        const grade = pct >= 90 ? 'Sobresaliente' : pct >= 75 ? 'Notable' : pct >= 60 ? 'Aprobado' : 'Suspendido';
-
-        result.className = `exam-result show ${pass ? 'pass' : 'fail'}`;
-        result.innerHTML = `
-          <div class="score" style="color:${pass ? 'var(--c-success)' : 'var(--c-danger)'}">${pct}%</div>
-          <div class="score-label">${correct} de ${total} preguntas correctas</div>
-          <div class="grade">${grade}</div>
-          <p style="margin-top:.75rem;font-size:var(--text-sm);color:var(--c-text-m);">
-            ${pass
-              ? '¡Enhorabuena! Has superado la evaluación del módulo de Sistema Músculo-Esquelético.'
-              : 'No has alcanzado la nota mínima. Repasa las unidades con conceptos en rojo y vuelve a intentarlo.'}
-          </p>`;
+      opts.forEach(opt => {
+        const r = opt.querySelector('input');
+        if (r.value === 'ok') opt.classList.add('correct');
       });
 
-      // Botón reiniciar examen
-      const resetBtn = form.querySelector('.btn-reset-exam');
-      if (resetBtn) {
-        resetBtn.addEventListener('click', () => {
-          form.reset();
-          form.querySelectorAll('.option-label').forEach(opt =>
-            opt.classList.remove('correct-answer', 'wrong-answer')
-          );
-          const result = form.querySelector('.exam-result');
-          if (result) { result.className = 'exam-result'; result.innerHTML = ''; }
-        });
+      if (sel.value !== 'ok') {
+        sel.closest('.atv-opt').classList.add('wrong');
+      } else {
+        ok++;
       }
     });
+
+    if (unanswered > 0) {
+      res.style.display = 'block';
+      res.style.background = '#FDEEF0'; res.style.border = '1px solid #F5C5CB';
+      res.innerHTML = `<strong style="color:#7B2D2D">⚠ Responde todas las preguntas antes de corregir (${unanswered} sin contestar).</strong>`;
+      return;
+    }
+
+    const pct = Math.round((ok / total) * 100);
+    const grade = pct >= 90 ? 'Sobresaliente' : pct >= 75 ? 'Notable' : pct >= 60 ? 'Aprobado' : 'Suspenso';
+    const pass = pct >= 60;
+
+    res.style.display = 'block';
+    res.style.background = pass ? '#D4F5E5' : '#FDEEF0';
+    res.style.border = pass ? '1px solid #8EDFC0' : '1px solid #F5C5CB';
+    res.innerHTML = `
+      <div style="font-family:Nunito,sans-serif;font-size:2.5rem;font-weight:800;color:${pass ? '#1A6B41' : '#E74C3C'};line-height:1">${pct}%</div>
+      <div style="color:#5A7A8A;margin:.4rem 0">${ok} de ${total} preguntas correctas</div>
+      <div style="display:inline-block;margin-top:.75rem;padding:.5rem 1.5rem;border-radius:999px;background:${pass ? '#2ECC71' : '#E74C3C'};color:#fff;font-weight:700;font-size:1rem">${grade}</div>
+      <p style="margin-top:1rem;color:#5A7A8A;font-size:.875rem">
+        ${pass ? '¡Enhorabuena! Has superado la evaluación.' : 'No has alcanzado el 60% mínimo. Repasa y vuelve a intentarlo.'}
+      </p>`;
+  };
+
+  window.resetExamBlock = function(containerId, resultId) {
+    const container = document.getElementById(containerId);
+    const res = document.getElementById(resultId);
+    if (!container || !res) return;
+
+    container.querySelectorAll('input[type=radio]').forEach(r => r.checked = false);
+    container.querySelectorAll('.atv-opt').forEach(o => o.classList.remove('correct', 'wrong'));
+    res.style.display = 'none';
+    res.innerHTML = '';
+  };
+
+  /* ── A11Y EXAM ENHANCEMENTS ────────────────────────── */
+  document.querySelectorAll('.atv-q').forEach((q, i) => {
+    q.setAttribute('role', 'group');
+    const text = q.querySelector('.atv-q-text');
+    if (text) {
+      const id = 'exam-q-label-' + i;
+      text.id = id;
+      q.setAttribute('aria-labelledby', id);
+    }
+  });
+
+  /* ── PROGRESS TRACKER ─────────────────────────────── */
+  function initProgress() {
+    const checkboxes = document.querySelectorAll('.unit-check');
+    
+    function updateModuleProgress(moduleId) {
+      const panel = document.getElementById(moduleId);
+      if (!panel) return;
+      const checks = panel.querySelectorAll('.unit-check');
+      if (!checks.length) return;
+      
+      const total = checks.length;
+      const completed = panel.querySelectorAll('.unit-check:checked').length;
+      
+      const pText = panel.querySelector('.module-progress-text');
+      if (pText) {
+        pText.textContent = `Has completado ${completed} de ${total} unidades.`;
+        if (completed === total) {
+          pText.style.color = 'var(--c-success)';
+        } else {
+          pText.style.color = 'var(--c-primary)';
+        }
+      }
+    }
+
+    checkboxes.forEach(chk => {
+      const mod = chk.dataset.module;
+      const unit = chk.dataset.unit;
+      if (!mod || !unit) return;
+
+      const key = `anicuraCampus:progress:${mod}:${unit}`;
+      if (localStorage.getItem(key) === 'true') {
+        chk.checked = true;
+      }
+
+      chk.addEventListener('change', () => {
+        localStorage.setItem(key, chk.checked ? 'true' : 'false');
+        updateModuleProgress(mod);
+      });
+    });
+
+    const modulesWithChecks = [...new Set([...checkboxes].map(c => c.dataset.module).filter(Boolean))];
+    modulesWithChecks.forEach(mod => updateModuleProgress(mod));
   }
-  initExam();
+  initProgress();
 
 })();

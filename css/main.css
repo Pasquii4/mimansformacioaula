@@ -65,7 +65,20 @@ img, svg { display: block; max-width: 100%; }
 button, input, select, textarea { font: inherit; }
 a { text-decoration: none; color: inherit; }
 button { cursor: pointer; border: none; background: none; }
-:focus-visible { outline: 2px solid var(--c-secondary); outline-offset: 3px; border-radius: var(--r-sm); }
+:focus-visible { outline: 3px solid var(--c-primary); outline-offset: 2px; border-radius: var(--r-sm); }
+
+/* A11y Focus Styles for Specific Elements */
+.btn:focus-visible, a:focus-visible, .module-link:focus-visible, .unit-btn:focus-visible, button:focus-visible {
+  outline: 3px solid var(--c-primary);
+  outline-offset: 3px;
+  border-radius: var(--r-sm);
+}
+
+.atv-fc:focus-visible, .lesson-card:focus-visible, .atv-opt:focus-visible {
+  outline: 3px solid var(--c-primary);
+  outline-offset: 4px;
+  border-radius: var(--r-lg);
+}
 h1,h2,h3,h4,h5,h6 { margin: 0; line-height: 1.15; }
 
 /* ─── LAYOUT ─────────────────────────────────────────────── */
@@ -548,52 +561,7 @@ main { padding: var(--sp-8); display: flex; flex-direction: column; gap: var(--s
 .progress-card strong { font-family: var(--font-display); display: block; margin-bottom: .3rem; }
 .progress-card .muted { color: var(--c-text-m); font-size: var(--text-xs); }
 
-/* ─── FLASHCARDS ─────────────────────────────────────────── */
-.flashcards-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0,1fr));
-  gap: var(--sp-4);
-  margin-top: var(--sp-4);
-}
-.flashcard {
-  perspective: 900px;
-  min-height: 185px;
-  cursor: pointer;
-}
-.fc-inner {
-  width: 100%;
-  height: 100%;
-  min-height: 185px;
-  position: relative;
-  transform-style: preserve-3d;
-  transition: transform .45s cubic-bezier(.4,0,.2,1);
-  border-radius: 18px;
-}
-.flashcard.flipped .fc-inner { transform: rotateY(180deg); }
-.fc-face {
-  position: absolute;
-  inset: 0;
-  border-radius: 18px;
-  padding: var(--sp-4) var(--sp-5);
-  backface-visibility: hidden;
-  border: 1px solid var(--c-divider);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  box-shadow: var(--shadow-sm);
-}
-.fc-face.front { background: #FFFFFF; }
-.fc-face.back  { background: var(--c-blue-soft); transform: rotateY(180deg); }
-.fc-face small {
-  font-size: var(--text-xs);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .07em;
-  color: var(--c-text-m);
-}
-.fc-face strong { font-family: var(--font-display); font-size: var(--text-base); color: var(--c-text); }
-.fc-face span   { font-size: var(--text-xs); color: var(--c-text-m); }
-.fc-hint { font-size: var(--text-xs); color: var(--c-text-f); margin-top: var(--sp-4); text-align: center; }
+
 
 /* ─── FILL IN THE BLANK ──────────────────────────────────── */
 .fill-activity {
@@ -842,7 +810,7 @@ main { padding: var(--sp-8); display: flex; flex-direction: column; gap: var(--s
 .muted { color: var(--c-text-m); }
 .sr-only { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; }
 
-/* ─── RESPONSIVE ─────────────────────────────────────────── */
+/* ─── RESPONSIVE FIX ─────────────────────────────────────────── */
 @media (max-width: 1180px) {
   .app, .hero, .lesson-shell { grid-template-columns: 1fr; }
   .sidebar { height: auto; position: relative; top: 0; flex-direction: row; flex-wrap: wrap; }
@@ -850,18 +818,58 @@ main { padding: var(--sp-8); display: flex; flex-direction: column; gap: var(--s
   .flashcards-grid { grid-template-columns: 1fr 1fr; }
   .progress-grid { grid-template-columns: 1fr 1fr; }
 }
+
+@media (max-width: 900px) {
+  /* Sidebar colapsada por encima del contenido o layout en columna */
+  .sidebar { 
+    flex-direction: column; 
+    border-right: none;
+    border-bottom: 1px solid var(--c-divider);
+    padding: var(--sp-4);
+  }
+  .modules-nav {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: .5rem;
+  }
+}
+
 @media (max-width: 760px) {
   main { padding: var(--sp-4); }
   .modules-grid, .qa-grid, .diagram-grid, .two-col, .hero-grid { grid-template-columns: 1fr; }
-  .flashcards-grid { grid-template-columns: 1fr 1fr; }
   .footer-card { flex-direction: column; align-items: flex-start; }
   .mod-header { flex-direction: column; align-items: flex-start; }
 }
+
+@media (max-width: 600px) {
+  /* grids de flashcards y tarjetas pasen a 1-2 columnas */
+  .flashcards-grid, .atv-fc-grid, .modules-grid, .modules-nav { grid-template-columns: 1fr; }
+  
+  /* Evitar fuentes demasiado pequeñas en móvil */
+  :root {
+    --text-base: 1.05rem;
+    --text-lg: 1.2rem;
+    --text-xl: 1.45rem;
+    --text-2xl: 1.8rem;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: .01ms !important;
     transition-duration: .01ms !important;
   }
+}
+
+/* ─── CONTENEDOR DE TABLAS (overflow-x) ──────────────────────── */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: var(--sp-6);
+}
+.table-responsive table {
+  margin-bottom: 0; /* Evita doble margen */
 }
 /* - Sidebar badge aliases (compatibilidad) ---------- */
 .status-dev { display:inline-flex; padding:.25rem .55rem; border-radius:var(--r-full); background:#FEF3D0; color:#8A5F00; font-size:.65rem; font-weight:700; white-space:nowrap; }
