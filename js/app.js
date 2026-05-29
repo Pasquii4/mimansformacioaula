@@ -71,42 +71,6 @@
     });
   });
 
-  /* ── CREAR PANELES PARA MÓDULOS "EN DESARROLLO" ───── */
-  const devModules = []; // All modules now have static HTML
-
-  const mainEl = document.querySelector('main');
-  devModules.forEach(mod => {
-    const section = document.createElement('section');
-    section.id = mod.id;
-    section.className = 'content-panel hide';
-    section.setAttribute('aria-hidden', 'true');
-    section.innerHTML = `
-      <div class="dev-hero">
-        <span class="pill pill-dev" style="margin-bottom:var(--sp-4);display:inline-flex;">🚧 En desarrollo</span>
-        <h3>${mod.title}</h3>
-        <p class="muted" style="max-width:60ch;margin-top:.5rem;">${mod.desc}</p>
-        <p class="muted" style="max-width:60ch;margin-top:.5rem;font-size:var(--text-sm);">
-          Este bloque ya forma parte de la estructura del campus. Se desarrollará con el mismo sistema de unidades, 
-          teoría enriquecida, diagramas, actividades interactivas y evaluación que el módulo del Sistema Músculo-Esquelético.
-        </p>
-        <div class="dev-grid" style="margin-top:var(--sp-6);">
-          <div class="skeleton"></div>
-          <div class="skeleton"></div>
-          <div class="skeleton"></div>
-          <div class="skeleton"></div>
-        </div>
-        <div style="margin-top:var(--sp-6);display:flex;gap:var(--sp-3);">
-          <button class="btn btn-outline" data-jump="campus-home">← Volver al campus</button>
-          <button class="btn btn-primary" data-jump="tema-7">Ver módulo completo</button>
-        </div>
-      </div>`;
-    mainEl.appendChild(section);
-
-    // Re-attach jump listeners for dynamically created buttons
-    section.querySelectorAll('[data-jump]').forEach(btn => {
-      btn.addEventListener('click', () => showPanel(btn.dataset.jump));
-    });
-  });
 
   /* ── NAVEGACIÓN INTERNA DE UNIDADES ───────────────── */
   function initUnitNav() {
