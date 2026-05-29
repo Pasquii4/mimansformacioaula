@@ -294,29 +294,29 @@
   });
 
   /* ── PROGRESS TRACKER ─────────────────────────────── */
-  function initProgress() {
-    const checkboxes = document.querySelectorAll('.unit-check');
+  window.updateModuleProgressUI = function(moduleId) {
+    const panel = document.getElementById(moduleId);
+    if (!panel) return;
+    const checks = panel.querySelectorAll('.unit-check');
+    if (!checks.length) return;
     
-    function updateModuleProgress(moduleId) {
-      const panel = document.getElementById(moduleId);
-      if (!panel) return;
-      const checks = panel.querySelectorAll('.unit-check');
-      if (!checks.length) return;
-      
-      const total = checks.length;
-      const completed = panel.querySelectorAll('.unit-check:checked').length;
-      
-      const pText = panel.querySelector('.module-progress-text');
-      if (pText) {
-        pText.textContent = `Has completado ${completed} de ${total} unidades.`;
-        if (completed === total) {
-          pText.style.color = 'var(--c-success)';
-        } else {
-          pText.style.color = 'var(--c-primary)';
-        }
+    const total = checks.length;
+    const completed = panel.querySelectorAll('.unit-check:checked').length;
+    
+    const pText = panel.querySelector('.module-progress-text');
+    if (pText) {
+      pText.textContent = `Has completado ${completed} de ${total} unidades.`;
+      if (completed === total) {
+        pText.style.color = 'var(--c-success)';
+      } else {
+        pText.style.color = 'var(--c-primary)';
       }
     }
+  };
 
+  function initProgress() {
+    // 1. Restaurar el estado inicial desde localStorage
+    const checkboxes = document.querySelectorAll('.unit-check');
     checkboxes.forEach(chk => {
       const mod = chk.dataset.module;
       const unit = chk.dataset.unit;
@@ -326,16 +326,28 @@
       if (localStorage.getItem(key) === 'true') {
         chk.checked = true;
       }
-
-      chk.addEventListener('change', () => {
-        localStorage.setItem(key, chk.checked ? 'true' : 'false');
-        updateModuleProgress(mod);
-      });
     });
 
+    // 2. Listener genérico en document (event delegation)
+    document.addEventListener('change', (e) => {
+      const chk = e.target;
+      if (!chk.matches('.unit-check')) return;
+
+      const mod = chk.dataset.module;
+      const unit = chk.dataset.unit;
+      if (!mod || !unit) return;
+
+      const key = `anicuraCampus:progress:${mod}:${unit}`;
+      localStorage.setItem(key, chk.checked ? 'true' : 'false');
+      
+      window.updateModuleProgressUI(mod);
+    });
+
+    // 3. Actualizar la UI inicial para todos los módulos
     const modulesWithChecks = [...new Set([...checkboxes].map(c => c.dataset.module).filter(Boolean))];
-    modulesWithChecks.forEach(mod => updateModuleProgress(mod));
+    modulesWithChecks.forEach(mod => window.updateModuleProgressUI(mod));
   }
+  
   initProgress();
 
 })();
