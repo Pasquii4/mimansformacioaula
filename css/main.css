@@ -440,6 +440,8 @@ main { padding: var(--sp-8); display: flex; flex-direction: column; gap: var(--s
 }
 .lead { color: var(--c-text-m); font-size: var(--text-base); margin-bottom: var(--sp-5); }
 
+.lesson-main section { margin-bottom: 2.5rem; }
+
 .lesson-card h5 {
   font-family: var(--font-display);
   font-size: var(--text-base);
@@ -510,13 +512,15 @@ main { padding: var(--sp-8); display: flex; flex-direction: column; gap: var(--s
   background: var(--c-blue-soft);
   color: var(--c-primary);
   text-align: left;
-  padding: var(--sp-3) var(--sp-4);
+  padding: 1rem 1.25rem;
+  line-height: 1.6;
   font-family: var(--font-display);
   font-weight: 700;
   border-bottom: 2px solid #B8DCE6;
 }
 .comparison-table td {
-  padding: var(--sp-3) var(--sp-4);
+  padding: 1rem 1.25rem;
+  line-height: 1.6;
   border-bottom: 1px solid var(--c-divider);
   color: var(--c-text-m);
 }
@@ -844,6 +848,8 @@ main { padding: var(--sp-8); display: flex; flex-direction: column; gap: var(--s
 @media (max-width: 600px) {
   /* grids de flashcards y tarjetas pasen a 1-2 columnas */
   .flashcards-grid, .atv-fc-grid, .modules-grid, .modules-nav { grid-template-columns: 1fr; }
+  
+  .hero-card, .lesson-card { padding: 1.25rem; }
   
   /* Evitar fuentes demasiado pequeñas en móvil */
   :root {

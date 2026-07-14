@@ -83,8 +83,8 @@
       🐾 AniCura ATV
     </div>
     <div class="navbar-links">
-      <button class="btn" style="background:var(--color-secondary);color:#fff;">Mi progreso</button>
-      <button class="btn" style="background:var(--color-soft-pink);color:var(--color-primary);font-weight:700;">Urgencias/Soporte</button>
+      <button class="btn btn-primary" data-jump="progress-panel">Mi progreso</button>
+      <button class="btn" style="background:var(--c-pink-soft);color:var(--c-primary);font-weight:700;">Urgencias/Soporte</button>
     </div>
   </header>
 
@@ -96,9 +96,8 @@
       
 
       <div class="sidebar-info">
-        <span class="pill pill-primary">Área de estudio</span>
-        <!-- SIMPLIFICADO: Texto introductorio enfocado en el alumno -->
-        <p style="margin:.8rem 0 0;color:var(--color-text-muted);font-size:var(--text-sm)">Selecciona un módulo para acceder a los contenidos, repasos y evaluaciones de tu grado.</p>
+        <span class="pill pill-primary">Campus AniCura</span>
+        <p style="margin:.8rem 0 0;color:var(--c-text-m);font-size:var(--text-sm)">Explora el temario, pon a prueba tus conocimientos y sigue tu evolución clínica como Auxiliar Técnico Veterinario.</p>
       </div>
 
     <nav aria-label="Temario ATV" class="modules" role="tablist">
@@ -136,11 +135,11 @@
         <!-- SIMPLIFICADO: Hero card y métricas orientadas al estudiante -->
         <div class="hero">
           <div class="hero-card">
-            <span class="pill pill-primary">Tu área personal</span>
-            <h2>Bienvenido al Campus Virtual ATV.</h2>
-            <p>Accede a tus materiales de estudio, repasa conceptos clave con tarjetas interactivas y pon a prueba tus conocimientos en cada módulo.</p>
+            <span class="pill pill-primary">Tu formación continua</span>
+            <h2>Campus Virtual AniCura ATV</h2>
+            <p>Tu plataforma interactiva para consolidar conocimientos clínicos. El flujo es sencillo: lee la <strong>teoría</strong>, memoriza jugando con las <strong>tarjetas didácticas</strong> y ponte a prueba con la <strong>evaluación final</strong>.</p>
             <div class="hero-actions">
-              <button class="btn btn-primary" data-jump="tema-1">Comenzar curso (Módulo 1)</button>
+              <button class="btn btn-primary" data-jump="tema-7">Ver módulo destacado (Tema 7)</button>
               <button class="btn btn-outline" data-jump="modulos-grid">Ver temario general</button>
             </div>
           </div>
@@ -149,31 +148,58 @@
         <section>
           <div class="sec-head">
             <div>
-              <!-- SIMPLIFICADO: Texto de sección de temario -->
-              <h3>Temario del grado</h3>
-              <p>Navega por los módulos disponibles para acceder a la teoría, actividades y evaluación.</p>
+              <h3>Ruta de aprendizaje</h3>
+              <p>Selecciona un módulo para acceder al material didáctico. Los módulos en amarillo se irán desbloqueando próximamente.</p>
             </div>
           </div>
           <div class="modules-grid" id="modulos-grid">
-            <article class="module-card live"><span class="pill pill-live">Módulo activo</span><h4>1. Material de consulta</h4><p>Zona futura para PDFs, guías rápidas, glosarios y recursos de apoyo.</p><button class="btn btn-primary" data-jump="tema-1">Abrir módulo</button></article>
-            <article class="module-card live"><span class="pill pill-live">Módulo activo</span><h4>2. Domesticación del perro</h4><p>Evolución, adaptación, contexto clínico y relación humano-animal.</p><button class="btn btn-primary" data-jump="tema-2">Abrir módulo</button></article>
-            <article class="module-card live"><span class="pill pill-live">Módulo activo</span><h4>3. Razas de perros</h4><p>Clasificación por tamaños, grupos y rasgos anatómicos relevantes.</p><button class="btn btn-primary" data-jump="tema-3">Abrir módulo</button></article>
-            <article class="module-card live"><span class="pill pill-live">Módulo activo</span><h4>4. Origen del gato</h4><p>Base histórica y biológica para comprender conducta y morfología.</p><button class="btn btn-primary" data-jump="tema-4">Abrir módulo</button></article>
-            <article class="module-card live"><span class="pill pill-live">Módulo activo</span><h4>5. Razas de gatos</h4><p>Patrones morfológicos, razas frecuentes y predisposiciones.</p><button class="btn btn-primary" data-jump="tema-5">Abrir módulo</button></article>
-            <article class="module-card live"><span class="pill pill-live">Módulo activo</span><h4>6. Fisiología celular</h4><p>Fundamentos para comprender tejidos, órganos y respuesta biológica.</p><button class="btn btn-primary" data-jump="tema-6">Abrir módulo</button></article>
-            <article class="module-card live"><span class="pill pill-live">Módulo activo</span><h4>7. Sistema músculo-esquelético</h4><p>Anatomía básica, articulaciones, huesos, esqueleto axial y apendicular, sistema muscular y actividades.</p><button class="btn btn-primary" data-jump="tema-7">Abrir módulo</button></article>
-            <article class="module-card live"><span class="pill pill-live">Módulo activo</span><h4>8. Nutrición y alimentación</h4><p>Raciones, requerimientos y soporte nutricional clínico.</p><button class="btn btn-primary" data-jump="tema-8">Abrir módulo</button></article>
-            <article class="module-card live"><span class="pill pill-live">Módulo activo</span><h4>9. Farmacología</h4><p>Principios, posologías, vías de administración y farmacocinética.</p><button class="btn btn-primary" data-jump="tema-9">Abrir módulo</button></article>
-            <article class="module-card live"><span class="pill pill-live">Módulo activo</span><h4>10. Exploración y manejo</h4><p>Exploración física, contención y constantes vitales básicas.</p><button class="btn btn-primary" data-jump="tema-10">Abrir módulo</button></article>
-            <article class="module-card live"><span class="pill pill-live">Módulo activo</span><h4>11. Sistema inmunológico y vacunación</h4><p>Defensas del organismo, protocolos de vacunación y antígenos.</p><button class="btn btn-primary" data-jump="tema-11">Abrir módulo</button></article>
-            <article class="module-card live"><span class="pill pill-live">Módulo activo</span><h4>12. Parásitos gastrointestinales</h4><p>Ciclos biológicos, zoonosis y tratamiento de endoparásitos.</p><button class="btn btn-primary" data-jump="tema-12">Abrir módulo</button></article>
-            <article class="module-card live"><span class="pill pill-live">Módulo activo</span><h4>13. Desparasitación externa</h4><p>Control de pulgas, garrapatas, ácaros y enfermedades vectoriales.</p><button class="btn btn-primary" data-jump="tema-13">Abrir módulo</button></article>
-            <article class="module-card live"><span class="pill pill-live">Módulo activo</span><h4>14. Órganos de los sentidos</h4><p>Anatomía de los sentidos e implicaciones en el comportamiento.</p><button class="btn btn-primary" data-jump="tema-14">Abrir módulo</button></article>
-            <article class="module-card live"><span class="pill pill-live">Módulo activo</span><h4>15. Oftalmología</h4><p>Exploración del ojo, patologías comunes y cuidados del ATV.</p><button class="btn btn-primary" data-jump="tema-15">Abrir módulo</button></article>
-            <article class="module-card live"><span class="pill pill-live">Módulo activo</span><h4>16. Otología</h4><p>Estructura del oído, limpieza auditiva y otitis frecuentes.</p><button class="btn btn-primary" data-jump="tema-16">Abrir módulo</button></article>
-            <article class="module-card live"><span class="pill pill-live">Módulo activo</span><h4>17. Dermatología</h4><p>Enfermedades de la piel, tricogramas y raspados cutáneos.</p><button class="btn btn-primary" data-jump="tema-17">Abrir módulo</button></article>
-            <article class="module-card live"><span class="pill pill-live">Módulo activo</span><h4>18. Prurito en perro y gato</h4><p>Manejo del picor, alergias, atopia y pautas de alivio.</p><button class="btn btn-primary" data-jump="tema-18">Abrir módulo</button></article>
-            <article class="module-card live"><span class="pill pill-live">Módulo activo</span><h4>19. Etología</h4><p>Comportamiento, alteraciones comunes y bienestar animal.</p><button class="btn btn-primary" data-jump="tema-19">Abrir módulo</button></article>
+            <article class="module-card inactive"><span class="pill pill-dev">Próximamente</span><h4>1. Material de consulta</h4><p>Zona futura para PDFs, guías rápidas, glosarios y recursos de apoyo.</p><button class="btn btn-outline" disabled>Abrir módulo</button></article>
+            <article class="module-card inactive"><span class="pill pill-dev">Próximamente</span><h4>2. Domesticación del perro</h4><p>Evolución, adaptación, contexto clínico y relación humano-animal.</p><button class="btn btn-outline" disabled>Abrir módulo</button></article>
+            <article class="module-card inactive"><span class="pill pill-dev">Próximamente</span><h4>3. Razas de perros</h4><p>Clasificación por tamaños, grupos y rasgos anatómicos relevantes.</p><button class="btn btn-outline" disabled>Abrir módulo</button></article>
+            <article class="module-card inactive"><span class="pill pill-dev">Próximamente</span><h4>4. Origen del gato</h4><p>Base histórica y biológica para comprender conducta y morfología.</p><button class="btn btn-outline" disabled>Abrir módulo</button></article>
+            <article class="module-card inactive"><span class="pill pill-dev">Próximamente</span><h4>5. Razas de gatos</h4><p>Patrones morfológicos, razas frecuentes y predisposiciones.</p><button class="btn btn-outline" disabled>Abrir módulo</button></article>
+            <article class="module-card inactive"><span class="pill pill-dev">Próximamente</span><h4>6. Fisiología celular</h4><p>Fundamentos para comprender tejidos, órganos y respuesta biológica.</p><button class="btn btn-outline" disabled>Abrir módulo</button></article>
+            <article class="module-card live"><span class="pill pill-live">Módulo activo</span><h4>7. Sistema músculo-esquelético</h4><p>Domina la anatomía del sistema músculo-esquelético, clave para el diagnóstico y manejo ortopédico.</p><button class="btn btn-primary" data-jump="tema-7">Abrir módulo</button></article>
+            <article class="module-card inactive"><span class="pill pill-dev">Próximamente</span><h4>8. Nutrición y alimentación</h4><p>Raciones, requerimientos y soporte nutricional clínico.</p><button class="btn btn-outline" disabled>Abrir módulo</button></article>
+            <article class="module-card inactive"><span class="pill pill-dev">Próximamente</span><h4>9. Farmacología</h4><p>Principios, posologías, vías de administración y farmacocinética.</p><button class="btn btn-outline" disabled>Abrir módulo</button></article>
+            <article class="module-card inactive"><span class="pill pill-dev">Próximamente</span><h4>10. Exploración y manejo</h4><p>Exploración física, contención y constantes vitales básicas.</p><button class="btn btn-outline" disabled>Abrir módulo</button></article>
+            <article class="module-card inactive"><span class="pill pill-dev">Próximamente</span><h4>11. Sistema inmunológico y vacunación</h4><p>Defensas del organismo, protocolos de vacunación y antígenos.</p><button class="btn btn-outline" disabled>Abrir módulo</button></article>
+            <article class="module-card inactive"><span class="pill pill-dev">Próximamente</span><h4>12. Parásitos gastrointestinales</h4><p>Ciclos biológicos, zoonosis y tratamiento de endoparásitos.</p><button class="btn btn-outline" disabled>Abrir módulo</button></article>
+            <article class="module-card inactive"><span class="pill pill-dev">Próximamente</span><h4>13. Desparasitación externa</h4><p>Control de pulgas, garrapatas, ácaros y enfermedades vectoriales.</p><button class="btn btn-outline" disabled>Abrir módulo</button></article>
+            <article class="module-card inactive"><span class="pill pill-dev">Próximamente</span><h4>14. Órganos de los sentidos</h4><p>Anatomía de los sentidos e implicaciones en el comportamiento.</p><button class="btn btn-outline" disabled>Abrir módulo</button></article>
+            <article class="module-card inactive"><span class="pill pill-dev">Próximamente</span><h4>15. Oftalmología</h4><p>Exploración del ojo, patologías comunes y cuidados del ATV.</p><button class="btn btn-outline" disabled>Abrir módulo</button></article>
+            <article class="module-card inactive"><span class="pill pill-dev">Próximamente</span><h4>16. Otología</h4><p>Estructura del oído, limpieza auditiva y otitis frecuentes.</p><button class="btn btn-outline" disabled>Abrir módulo</button></article>
+            <article class="module-card inactive"><span class="pill pill-dev">Próximamente</span><h4>17. Dermatología</h4><p>Enfermedades de la piel, tricogramas y raspados cutáneos.</p><button class="btn btn-outline" disabled>Abrir módulo</button></article>
+            <article class="module-card inactive"><span class="pill pill-dev">Próximamente</span><h4>18. Prurito en perro y gato</h4><p>Manejo del picor, alergias, atopia y pautas de alivio.</p><button class="btn btn-outline" disabled>Abrir módulo</button></article>
+            <article class="module-card live"><span class="pill pill-live">Módulo activo</span><h4>19. Etología</h4><p>Descubre el comportamiento animal, alteraciones comunes y pautas para el bienestar clínico.</p><button class="btn btn-primary" data-jump="tema-19">Abrir módulo</button></article>
+          </div>
+        </section>
+      </section>
+
+      <section id="progress-panel" class="content-panel hide" aria-hidden="true">
+        <div class="hero">
+          <div class="hero-card">
+            <span class="pill pill-primary">Tu evolución</span>
+            <h2>Mi progreso global</h2>
+            <p>Aquí puedes ver un resumen de tu avance en el campus. ¡Sigue así, cada paso cuenta!</p>
+            
+            <div class="metric-card" style="margin-top: 2rem; max-width: 320px;">
+              <span class="m-label">Completado global</span>
+              <div class="m-value" id="global-progress-value" style="margin-top: 0.5rem; font-size: 3rem;">0%</div>
+              <div class="bar" style="margin-top: 1rem;"><span id="global-progress-bar" style="width: 0%;"></span></div>
+            </div>
+          </div>
+        </div>
+        
+        <section>
+          <div class="sec-head">
+            <div>
+              <h3>Progreso por Módulos</h3>
+              <p>Módulos en los que ya has comenzado a trabajar o que están disponibles.</p>
+            </div>
+          </div>
+          <div id="progress-modules-list" class="progress-grid">
+            <!-- Rellenado dinámicamente vía JS -->
           </div>
         </section>
       </section>

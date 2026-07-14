@@ -258,6 +258,65 @@
   });
 
   /* ── PROGRESS TRACKER ─────────────────────────────── */
+  window.renderGlobalProgress = function() {
+    const listContainer = document.getElementById('progress-modules-list');
+    const globalVal = document.getElementById('global-progress-value');
+    const globalBar = document.getElementById('global-progress-bar');
+    if (!listContainer || !globalVal || !globalBar) return;
+
+    const allChecks = Array.from(document.querySelectorAll('.unit-check'));
+    if (!allChecks.length) {
+      listContainer.innerHTML = '<p class="muted">Aún no hay unidades disponibles para trackear.</p>';
+      return;
+    }
+
+    const modulesMap = {};
+    allChecks.forEach(chk => {
+      const mod = chk.dataset.module;
+      if (!mod) return;
+      if (!modulesMap[mod]) modulesMap[mod] = { total: 0, completed: 0, name: mod };
+      modulesMap[mod].total++;
+      if (chk.checked) modulesMap[mod].completed++;
+    });
+
+    const moduleLinks = document.querySelectorAll('.module-link');
+    const moduleNames = {};
+    moduleLinks.forEach(link => {
+      const p = link.dataset.panel;
+      const nameEl = link.querySelector('.mod-name');
+      if (p && nameEl) moduleNames[p] = nameEl.textContent.trim();
+    });
+
+    let totalUnits = 0;
+    let totalCompleted = 0;
+    let html = '';
+
+    for (const [modId, data] of Object.entries(modulesMap)) {
+      totalUnits += data.total;
+      totalCompleted += data.completed;
+      
+      const pct = Math.round((data.completed / data.total) * 100);
+      const modName = moduleNames[modId] || modId;
+      
+      html += `
+        <article class="progress-card">
+          <strong style="font-size: 1.05rem; line-height: 1.3; margin-bottom: 0.5rem; display: block; color: var(--c-text);">${modName}</strong>
+          <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 0.2rem;">
+            <span class="muted">${data.completed} de ${data.total} unidades</span>
+            <span style="font-weight: 800; color: var(--c-primary); font-family: var(--font-display);">${pct}%</span>
+          </div>
+          <div class="bar"><span style="width: ${pct}%"></span></div>
+        </article>
+      `;
+    }
+
+    listContainer.innerHTML = html;
+
+    const globalPct = totalUnits > 0 ? Math.round((totalCompleted / totalUnits) * 100) : 0;
+    globalVal.textContent = `${globalPct}%`;
+    globalBar.style.width = `${globalPct}%`;
+  };
+
   window.updateModuleProgressUI = function(moduleId) {
     const panel = document.getElementById(moduleId);
     if (!panel) return;
@@ -305,11 +364,13 @@
       localStorage.setItem(key, chk.checked ? 'true' : 'false');
       
       window.updateModuleProgressUI(mod);
+      window.renderGlobalProgress();
     });
 
     // 3. Actualizar la UI inicial para todos los módulos
     const modulesWithChecks = [...new Set([...checkboxes].map(c => c.dataset.module).filter(Boolean))];
     modulesWithChecks.forEach(mod => window.updateModuleProgressUI(mod));
+    window.renderGlobalProgress();
   }
   
   initProgress();
